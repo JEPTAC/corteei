@@ -1,0 +1,2537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b2a5b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Corte de Cable" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <title>Control de Corte de Cable | Electroingeniería</title>
+  <style>
+    :root{
+      --navy:#0b2a5b;
+      --navy-2:#071d3f;
+      --teal:#008a8a;
+      --teal-2:#00a3a3;
+      --green:#0f8f46;
+      --amber:#f3a400;
+      --orange:#f36b13;
+      --red:#c91523;
+      --blue:#2563eb;
+      --bg:#f4f7fb;
+      --card:#ffffff;
+      --line:#d7e0ec;
+      --line-2:#edf2f7;
+      --text:#18243a;
+      --muted:#667085;
+      --shadow:0 16px 42px rgba(11,42,91,.12);
+      --shadow-soft:0 10px 28px rgba(11,42,91,.08);
+      --radius:20px;
+      --font: Arial, Helvetica, sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(0,138,138,.10), transparent 28rem),
+        radial-gradient(circle at bottom right, rgba(243,107,19,.12), transparent 30rem),
+        var(--bg);
+      min-height:100vh;
+    }
+
+    .app{
+      width:min(1420px, 96vw);
+      margin:18px auto 40px;
+    }
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      background:
+        linear-gradient(135deg, rgba(7,29,63,.96), rgba(11,42,91,.96) 48%, rgba(0,138,138,.96)),
+        radial-gradient(circle at 85% 20%, rgba(255,255,255,.22), transparent 18rem);
+      color:white;
+      border-radius:30px;
+      box-shadow:var(--shadow);
+      padding:24px;
+      display:flex;
+      justify-content:space-between;
+      gap:18px;
+      align-items:flex-start;
+      min-height:168px;
+    }
+    .hero:before{
+      content:"";
+      position:absolute;
+      inset:auto -90px -160px auto;
+      width:360px;
+      height:360px;
+      background:radial-gradient(circle, rgba(255,255,255,.15), transparent 68%);
+      pointer-events:none;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      inset:14px 14px auto auto;
+      width:96px;
+      height:5px;
+      border-radius:99px;
+      background:linear-gradient(90deg, rgba(255,255,255,.7), rgba(255,255,255,.18));
+      opacity:.45;
+    }
+    .hero-main{position:relative; z-index:2; min-width:0; max-width:760px}
+    .hero-eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:10px;
+      padding:7px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.13);
+      border:1px solid rgba(255,255,255,.24);
+      color:rgba(255,255,255,.92);
+      font-weight:900;
+      font-size:.78rem;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+      backdrop-filter:blur(10px);
+    }
+    .hero h1{
+      margin:0 0 10px;
+      font-size:clamp(2rem, 4.6vw, 3.45rem);
+      line-height:1.03;
+      letter-spacing:-.03em;
+      text-transform:none;
+      text-wrap:balance;
+    }
+    .hero p{margin:0; color:rgba(255,255,255,.90); font-size:clamp(.96rem, 1.35vw, 1.08rem); max-width:620px}
+    .hero-chips{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px}
+    .hero-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.2);
+      color:rgba(255,255,255,.92);
+      font-weight:800;
+      font-size:.78rem;
+    }
+    .hero-actions{display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-end; align-items:center; z-index:2; flex:0 0 auto}
+    .version-pill{
+      border:1px solid rgba(255,255,255,.35);
+      background:rgba(255,255,255,.12);
+      color:white;
+      padding:10px 12px;
+      border-radius:999px;
+      font-size:.82rem;
+      white-space:nowrap;
+      backdrop-filter:blur(10px);
+    }
+
+    .toolbar{
+      margin:16px 0;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .toolbar-group{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+    .view-label{font-size:.85rem; color:var(--muted); font-weight:700}
+
+    button, .btn{
+      border:0;
+      border-radius:14px;
+      padding:12px 15px;
+      font-weight:800;
+      font-size:.92rem;
+      cursor:pointer;
+      color:var(--navy);
+      background:white;
+      box-shadow:var(--shadow-soft);
+      border:1px solid var(--line);
+      transition:transform .16s ease, box-shadow .16s ease, filter .16s ease;
+      user-select:none;
+    }
+    button:hover{transform:translateY(-1px); box-shadow:0 16px 34px rgba(11,42,91,.12)}
+    button:active{transform:scale(.98)}
+    .btn-primary{background:linear-gradient(135deg, var(--teal), var(--navy)); color:white; border-color:transparent}
+    .btn-green{background:linear-gradient(135deg, var(--green), #0c6d38); color:white; border-color:transparent}
+    .btn-orange{background:linear-gradient(135deg, var(--orange), #c94d05); color:white; border-color:transparent}
+    .btn-red{background:linear-gradient(135deg, var(--red), #99111d); color:white; border-color:transparent}
+    .btn-ghost{background:rgba(255,255,255,.7)}
+    .btn-small{padding:9px 11px; font-size:.8rem; border-radius:12px}
+    .active-view{outline:3px solid rgba(0,138,138,.22); color:white; background:var(--navy)}
+
+    .main-grid{
+      display:grid;
+      grid-template-columns:minmax(0, 1.05fr) minmax(360px, .95fr);
+      gap:18px;
+      align-items:start;
+    }
+
+    .card{
+      background:rgba(255,255,255,.94);
+      border:1px solid rgba(215,224,236,.9);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow-soft);
+      overflow:hidden;
+    }
+    .card-header{
+      padding:18px 20px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(248,251,255,.96));
+    }
+    .card-header h2, .card-header h3{margin:0; color:var(--navy); line-height:1.08}
+    .card-header h2{font-size:1.15rem; text-transform:uppercase; letter-spacing:.02em}
+    .card-header h3{font-size:1rem}
+    .card-body{padding:18px 20px}
+
+    form{display:grid; gap:14px}
+    fieldset{
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      margin:0;
+      background:linear-gradient(180deg, #fff, #fbfdff);
+    }
+    legend{
+      padding:0 10px;
+      font-weight:900;
+      color:var(--navy);
+      font-size:.94rem;
+      letter-spacing:.02em;
+    }
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(12, 1fr);
+      gap:12px;
+    }
+    .field{display:flex; flex-direction:column; gap:6px; min-width:0}
+    .col-2{grid-column:span 2}.col-3{grid-column:span 3}.col-4{grid-column:span 4}.col-5{grid-column:span 5}.col-6{grid-column:span 6}.col-7{grid-column:span 7}.col-8{grid-column:span 8}.col-12{grid-column:span 12}
+    label{font-size:.78rem; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:.04em}
+    input, select, textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:13px;
+      padding:12px 12px;
+      background:#fff;
+      color:var(--text);
+      font-size:16px;
+      outline:none;
+      transition:border-color .16s ease, box-shadow .16s ease;
+      min-height:44px;
+    }
+    input:focus, select:focus, textarea:focus{border-color:var(--teal); box-shadow:0 0 0 4px rgba(0,138,138,.12)}
+    textarea{min-height:82px; resize:vertical}
+    .readonly{background:#f8fafc; color:#344054; font-weight:800}
+
+    .checks{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:10px;
+    }
+    .check-card{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:white;
+      font-weight:800;
+      color:var(--navy);
+    }
+    .check-card input{width:20px; height:20px; min-height:20px; accent-color:var(--teal)}
+
+
+    .segmented-control{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:10px;
+      width:100%;
+    }
+    .seg-option{
+      width:100%;
+      min-height:58px;
+      padding:12px;
+      border-radius:15px;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--navy);
+      box-shadow:none;
+      text-align:left;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:3px;
+      line-height:1.1;
+    }
+    .seg-option:hover{box-shadow:var(--shadow-soft)}
+    .seg-option .seg-title{font-size:.92rem; font-weight:1000}
+    .seg-option .seg-sub{font-size:.72rem; color:var(--muted); font-weight:800}
+    .seg-option.active{
+      color:white;
+      border-color:transparent;
+      background:linear-gradient(135deg, var(--teal), var(--navy));
+      box-shadow:0 12px 28px rgba(0,138,138,.22);
+    }
+    .seg-option.active .seg-sub{color:rgba(255,255,255,.86)}
+    .seg-option.warn.active{background:linear-gradient(135deg, var(--orange), #c94d05)}
+    .seg-option.stop.active{background:linear-gradient(135deg, var(--red), #99111d)}
+    .inline-tools{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px}
+    .share-panel{
+      margin-top:12px;
+      display:none;
+      gap:8px;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid #bbf7d0;
+      background:#f0fdf4;
+      color:#14532d;
+      font-size:.88rem;
+      line-height:1.35;
+      font-weight:700;
+    }
+    .share-panel.show{display:grid}
+    .share-panel strong{color:#064e3b}
+
+    .rule-box{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      padding:13px;
+      background:#f8fafc;
+      border:1px dashed #b8c7da;
+      border-radius:16px;
+      color:#344054;
+      font-size:.92rem;
+      line-height:1.35;
+    }
+    .rule-box strong{color:var(--navy)}
+    .status-panel{
+      display:grid;
+      gap:10px;
+      padding:14px;
+      border-radius:18px;
+      background:linear-gradient(135deg, #f8fafc, #fff);
+      border:1px solid var(--line);
+      min-height:110px;
+    }
+    .status-label{font-size:.8rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; font-weight:900}
+    .status-value{font-size:1.25rem; font-weight:1000; color:var(--navy)}
+    .status-detail{font-size:.9rem; color:#475467; line-height:1.35}
+    .status-ok{border-left:6px solid var(--green)}
+    .status-warn{border-left:6px solid var(--amber)}
+    .status-stop{border-left:6px solid var(--red)}
+    .status-auth{border-left:6px solid var(--orange)}
+
+    .form-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      position:sticky;
+      bottom:10px;
+      padding:12px;
+      background:rgba(244,247,251,.76);
+      backdrop-filter:blur(14px);
+      border:1px solid rgba(215,224,236,.85);
+      border-radius:18px;
+      z-index:10;
+    }
+
+    .dashboard-grid{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:12px;
+    }
+    .kpi{
+      padding:14px;
+      border-radius:18px;
+      background:linear-gradient(180deg, #fff, #f9fbff);
+      border:1px solid var(--line);
+      min-height:105px;
+      position:relative;
+      overflow:hidden;
+    }
+    .kpi:after{
+      content:"";
+      position:absolute;
+      right:-26px;
+      top:-28px;
+      width:86px;
+      height:86px;
+      border-radius:50%;
+      background:rgba(0,138,138,.08);
+    }
+    .kpi .value{font-size:2rem; font-weight:1000; color:var(--navy); line-height:1}
+    .kpi .label{font-size:.78rem; color:var(--muted); font-weight:900; text-transform:uppercase; margin-top:8px; letter-spacing:.04em}
+    .kpi.good{border-left:5px solid var(--green)}
+    .kpi.warn{border-left:5px solid var(--amber)}
+    .kpi.bad{border-left:5px solid var(--red)}
+    .kpi.blue{border-left:5px solid var(--blue)}
+
+    .chart-card{margin-top:14px; padding:16px; border:1px solid var(--line); border-radius:18px; background:white}
+    .chart-title{margin:0 0 12px; font-weight:1000; color:var(--navy); text-transform:uppercase; letter-spacing:.03em; font-size:.88rem}
+    .bars{display:grid; gap:10px}
+    .bar-row{display:grid; grid-template-columns:130px 1fr 42px; gap:10px; align-items:center; font-size:.86rem; font-weight:800; color:#344054}
+    .bar-track{height:12px; background:#edf2f7; border-radius:999px; overflow:hidden; border:1px solid #e5eaf1}
+    .bar-fill{height:100%; width:0%; border-radius:999px; transition:width .5s ease}
+    .fill-green{background:linear-gradient(90deg,var(--green),#2db56b)}
+    .fill-orange{background:linear-gradient(90deg,var(--orange),#f6a05b)}
+    .fill-amber{background:linear-gradient(90deg,var(--amber),#ffcb4d)}
+    .fill-red{background:linear-gradient(90deg,var(--red),#e94b5a)}
+    .fill-blue{background:linear-gradient(90deg,var(--blue),#60a5fa)}
+
+    .donut-wrap{display:grid; grid-template-columns:150px 1fr; gap:16px; align-items:center}
+    .donut{width:150px; height:150px}
+    .donut text{font-family:var(--font); fill:var(--navy); font-weight:1000}
+    .legend{display:grid; gap:8px}
+    .legend-item{display:flex; align-items:center; gap:8px; font-size:.88rem; font-weight:800; color:#344054}
+    .dot{width:11px; height:11px; border-radius:50%; display:inline-block}
+
+    .exports{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:10px;
+    }
+    .note{
+      margin-top:12px;
+      background:#fff7ed;
+      border:1px solid #fed7aa;
+      color:#7c2d12;
+      border-radius:16px;
+      padding:12px 14px;
+      font-size:.9rem;
+      line-height:1.35;
+    }
+    .email-config{
+      margin-top:12px;
+      display:grid;
+      gap:10px;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#f8fafc;
+    }
+    .email-config .two{display:grid; grid-template-columns:1fr; gap:10px}
+    .email-config label{font-size:.72rem}
+    .email-config input{min-height:42px; padding:10px 12px; font-size:15px}
+    @media(min-width:980px){.email-config .two{grid-template-columns:1fr 1.35fr}}
+
+    .table-card{margin-top:18px}
+    .table-tools{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:12px;
+    }
+    .search{max-width:420px}
+    .table-scroll{overflow:auto; border:1px solid var(--line); border-radius:18px; background:white; max-height:520px}
+    table{width:100%; border-collapse:separate; border-spacing:0; min-width:1200px}
+    th, td{padding:11px 12px; border-bottom:1px solid var(--line-2); text-align:left; font-size:.84rem; vertical-align:top}
+    th{position:sticky; top:0; z-index:1; background:#f8fafc; color:var(--navy); font-weight:1000; text-transform:uppercase; letter-spacing:.04em; font-size:.74rem; border-bottom:1px solid var(--line)}
+    tr:hover td{background:#fcfdff}
+    .pill{display:inline-flex; align-items:center; gap:6px; padding:5px 8px; border-radius:999px; font-size:.72rem; font-weight:1000; white-space:nowrap}
+    .pill-ok{background:#dcfce7; color:#166534}.pill-warn{background:#fef3c7; color:#92400e}.pill-stop{background:#fee2e2; color:#991b1b}.pill-auth{background:#ffedd5; color:#9a3412}.pill-blue{background:#dbeafe; color:#1e40af}
+    .row-actions{display:flex; gap:6px; flex-wrap:wrap}
+    .empty{
+      padding:26px;
+      text-align:center;
+      color:var(--muted);
+      font-weight:800;
+      background:#fff;
+      border-radius:18px;
+      border:1px dashed #b8c7da;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:24px;
+      transform:translateX(-50%) translateY(120%);
+      background:var(--navy-2);
+      color:white;
+      padding:13px 16px;
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      z-index:999;
+      font-weight:800;
+      min-width:min(420px, 92vw);
+      text-align:center;
+      opacity:0;
+      transition:transform .25s ease, opacity .25s ease;
+    }
+    .toast.show{transform:translateX(-50%) translateY(0); opacity:1}
+
+
+
+    .field.expanded{
+      grid-column:span 12 !important;
+      transition:grid-column .18s ease;
+    }
+    .field.expanded input,
+    .field.expanded textarea{
+      min-height:54px;
+      font-size:16px;
+      box-shadow:0 0 0 4px rgba(0,138,138,.10);
+    }
+    textarea.auto-grow{
+      overflow:hidden;
+      resize:none;
+      line-height:1.35;
+      min-height:54px;
+      max-height:240px;
+    }
+    .field:focus-within label{color:var(--teal)}
+    .adaptive-hint{
+      font-size:.74rem;
+      color:var(--muted);
+      font-weight:700;
+      margin-top:2px;
+    }
+
+    @media (max-width:1050px){
+      .main-grid{grid-template-columns:1fr}
+      .dashboard-grid{grid-template-columns:repeat(3, 1fr)}
+      .exports{grid-template-columns:repeat(3, 1fr)}
+    }
+    @media (max-width:760px){
+      .app{width:100%; margin:0; padding:10px 10px 28px}
+      .hero{border-radius:24px; padding:18px; min-height:auto; flex-direction:column}
+      .hero h1{font-size:clamp(2rem, 9.2vw, 2.85rem); line-height:1.02}
+      .hero-actions{justify-content:flex-start; width:100%}
+      .hero-actions button{width:auto}
+      .hero-chips{gap:6px}
+      .hero-chip{font-size:.72rem; padding:7px 9px}
+      .toolbar{position:sticky; top:0; z-index:30; background:rgba(244,247,251,.88); padding:8px 0; backdrop-filter:blur(12px)}
+      .card-header{align-items:flex-start; flex-direction:column}
+      .card-body{padding:14px}
+      fieldset{padding:13px}
+      .form-grid{grid-template-columns:repeat(6, 1fr); gap:10px}
+      .col-2,.col-3{grid-column:span 3}.col-4,.col-5,.col-6,.col-7,.col-8,.col-12{grid-column:span 6}
+      .checks{grid-template-columns:1fr}
+      .segmented-control{grid-template-columns:1fr}
+      .dashboard-grid{grid-template-columns:repeat(2, 1fr)}
+      .donut-wrap{grid-template-columns:1fr; justify-items:center}
+      .exports{grid-template-columns:1fr}
+      .form-actions{justify-content:stretch}.form-actions button{flex:1 1 auto}
+      .bar-row{grid-template-columns:100px 1fr 34px}
+    }
+    @media (max-width:420px){
+      .dashboard-grid{grid-template-columns:1fr}
+      button{width:100%}
+      .toolbar-group{width:100%}
+      .toolbar-group button{flex:1 1 45%}
+      .hero-brand{flex-direction:column; align-items:flex-start; gap:12px}
+      .logo-badge{width:100%; min-width:0; min-height:72px; padding:12px 14px}
+      .logo-badge img{max-width:168px}
+      .hero h1{font-size:1.9rem; max-width:100%}
+      .hero p{font-size:.95rem; max-width:100%}
+      .hero-chip{flex:1 1 100%; justify-content:center}
+    }
+
+    /* Manual preview modes */
+    body[data-view="mobile"] .app{width:min(430px, 100vw); padding:10px; margin:0 auto 28px}
+    body[data-view="mobile"] .main-grid{grid-template-columns:1fr}
+    body[data-view="mobile"] .form-grid{grid-template-columns:repeat(6, 1fr)}
+    body[data-view="mobile"] .col-2, body[data-view="mobile"] .col-3{grid-column:span 3}
+    body[data-view="mobile"] .col-4, body[data-view="mobile"] .col-5, body[data-view="mobile"] .col-6, body[data-view="mobile"] .col-7, body[data-view="mobile"] .col-8, body[data-view="mobile"] .col-12{grid-column:span 6}
+    body[data-view="mobile"] .checks, body[data-view="mobile"] .exports, body[data-view="mobile"] .segmented-control{grid-template-columns:1fr}
+    body[data-view="mobile"] .dashboard-grid{grid-template-columns:1fr}
+    body[data-view="mobile"] .hero{flex-direction:column; min-height:auto; padding:18px; border-radius:24px}
+    body[data-view="mobile"] .hero-brand{flex-direction:column; align-items:flex-start; gap:14px}
+    body[data-view="mobile"] .logo-badge{width:100%; min-width:0; padding:12px 14px; min-height:74px}
+    body[data-view="mobile"] .logo-badge img{max-width:170px}
+    body[data-view="mobile"] .hero h1{font-size:2rem; max-width:100%}
+    body[data-view="mobile"] .hero p{font-size:.95rem; max-width:100%}
+    body[data-view="mobile"] .hero-actions{justify-content:flex-start; width:100%}
+    body[data-view="mobile"] .hero-actions button{width:auto}
+    body[data-view="tablet"] .app{width:min(820px, 96vw)}
+    body[data-view="tablet"] .main-grid{grid-template-columns:1fr}
+    body[data-view="tablet"] .exports{grid-template-columns:repeat(2,1fr)}
+    body[data-view="desktop"] .app{width:min(1420px, 96vw)}
+
+    .hero-brand{display:flex; align-items:center; gap:18px; min-width:0}
+    .logo-badge{
+      flex:0 0 auto;
+      background:rgba(255,255,255,.97);
+      border:1px solid rgba(255,255,255,.25);
+      border-radius:24px;
+      padding:14px 16px;
+      box-shadow:0 18px 36px rgba(0,0,0,.12);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-width:180px;
+      min-height:86px;
+    }
+    .logo-badge img{display:block; max-width:190px; width:100%; height:auto}
+    .hero h1{max-width:12ch}
+    .hero p{max-width:52ch}
+    .install-btn[hidden]{display:none !important}
+    .simple-badge{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18); color:#fff; font-weight:800; font-size:.78rem}
+    .clean-note{font-size:.88rem; line-height:1.45}
+
+
+    .cloud-card{margin:16px 0; overflow:hidden}
+    .cloud-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:16px; align-items:start}
+    .auth-panel{padding:16px; border-radius:18px; border:1px solid var(--line); background:linear-gradient(180deg,#fff,#f8fbff)}
+    .auth-title{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0 0 12px}
+    .auth-title strong{color:var(--navy); font-size:1rem}
+    .connection-pill{display:inline-flex; align-items:center; gap:7px; padding:7px 10px; border-radius:999px; font-weight:900; font-size:.76rem; background:#eef2ff; color:#1e3a8a; border:1px solid #c7d2fe}
+    .connection-pill.ok{background:#ecfdf3; color:#166534; border-color:#bbf7d0}
+    .connection-pill.warn{background:#fff7ed; color:#9a3412; border-color:#fed7aa}
+    .auth-row{display:grid; grid-template-columns:repeat(12,1fr); gap:10px}
+    .auth-row .field{grid-column:span 4}
+    .auth-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+    .notice-pulse{animation:noticePulse 1.2s ease-in-out 3}
+    @keyframes noticePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03); box-shadow:0 0 0 8px rgba(243,164,0,.14)}}
+    .user-chip{display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:999px; background:#f1f5f9; color:var(--navy); font-weight:900; font-size:.82rem; border:1px solid var(--line)}
+    .approval-list,.users-list{display:grid; gap:10px}
+    .approval-item,.user-item{border:1px solid var(--line); border-radius:16px; padding:12px; background:#fff; box-shadow:0 6px 18px rgba(11,42,91,.06)}
+    .approval-item strong,.user-item strong{color:var(--navy)}
+    .approval-meta,.user-meta{color:var(--muted); font-size:.86rem; line-height:1.4; margin-top:4px}
+    .approval-actions,.user-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+    .role-select{max-width:210px}
+    .admin-only[hidden], .cloud-only[hidden], .logged-only[hidden], .logged-out-only[hidden]{display:none !important}
+    .empty-soft{padding:14px; border-radius:14px; background:#f8fafc; color:#667085; border:1px dashed #cbd5e1; text-align:center; font-weight:700}
+    @media (max-width:820px){.cloud-grid{grid-template-columns:1fr}.auth-row .field{grid-column:span 12}.auth-actions button{flex:1 1 auto}.logo-badge{min-height:74px}}
+    body[data-view="mobile"] .cloud-grid{grid-template-columns:1fr}
+    body[data-view="mobile"] .auth-row .field{grid-column:span 12}
+
+
+    .login-required{display:none; margin:16px 0; border-left:6px solid var(--teal)}
+    body[data-session="out"] .login-required{display:block}
+    body[data-session="out"] .main-grid,
+    body[data-session="out"] .table-card{display:none !important}
+    body[data-session="out"] .toolbar,
+    body[data-session="out"] .app-menu,
+    body[data-session="out"] .analytics-section{display:none !important}
+    body[data-session="out"] .cloud-card{display:block !important}
+    .lock-message{display:flex; gap:12px; align-items:flex-start; color:var(--navy); font-weight:800; line-height:1.45}
+    .lock-message .icon{flex:0 0 auto; width:38px; height:38px; border-radius:14px; display:grid; place-items:center; background:linear-gradient(135deg,var(--teal),var(--navy)); color:#fff}
+    .session-filled input[readonly]{background:#f8fafc; color:var(--navy); font-weight:900; border-style:dashed}
+    .user-create-box{border:1px solid var(--line); border-radius:16px; padding:12px; background:linear-gradient(180deg,#fff,#f8fbff); margin-bottom:12px}
+    .user-create-box h4{margin:0 0 8px; color:var(--navy)}
+    .user-create-grid{display:grid; grid-template-columns:1fr 1fr 180px; gap:10px}
+    .users-subtitle{font-size:.8rem; font-weight:900; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin:12px 0 8px}
+    @media(max-width:820px){.user-create-grid{grid-template-columns:1fr}}
+    body[data-view="mobile"] .user-create-grid{grid-template-columns:1fr}
+
+
+    body[data-app-role="LIDER_LOGISTICO"] .operator-only,
+    body[data-app-role="GERENCIA"] .operator-only,
+    body[data-app-role="PENDIENTE"] .operator-only,
+    body[data-app-role="SIN_SESION"] .operator-only{display:none !important}
+    body[data-app-role="LIDER_LOGISTICO"] .main-grid,
+    body[data-app-role="GERENCIA"] .main-grid{grid-template-columns:1fr}
+    body[data-app-role="LIDER_LOGISTICO"] .dashboard-card,
+    body[data-app-role="GERENCIA"] .dashboard-card{max-width:100%}
+    .role-operational-note{display:none; margin-bottom:14px; border:1px solid var(--line); border-radius:16px; padding:13px; background:linear-gradient(135deg,#f8fafc,#ffffff); color:var(--navy); font-weight:800; line-height:1.45}
+    body[data-app-role="LIDER_LOGISTICO"] .role-operational-note,
+    body[data-app-role="GERENCIA"] .role-operational-note{display:flex; gap:10px; align-items:flex-start}
+    .role-operational-note .icon{width:34px; height:34px; flex:0 0 auto; border-radius:12px; display:grid; place-items:center; background:linear-gradient(135deg,var(--teal),var(--navy)); color:white}
+
+
+    .quick-steps{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px}
+    .quick-step{border:1px solid var(--line); border-radius:16px; padding:12px; background:linear-gradient(180deg,#fff,#f8fbff); color:var(--navy); font-weight:900; display:flex; gap:10px; align-items:center; min-height:74px}
+    .quick-step span{width:34px;height:34px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;color:white;background:linear-gradient(135deg,var(--teal),var(--navy));font-weight:900}
+    .operator-simple fieldset{padding:14px}
+    .operator-simple .primary-input input,
+    .operator-simple .primary-input textarea{font-size:1.05rem; padding:15px 14px; border-width:2px}
+    .operator-simple .readonly-result input{font-size:1.15rem; font-weight:900; color:var(--navy); background:#f8fafc}
+    .system-hidden{display:none !important}
+    .approval-gate{display:none; margin:12px 0; border-radius:18px; padding:14px; border:1px solid #f59e0b; background:linear-gradient(135deg,#fffbeb,#fff7ed); color:#7c2d12; font-weight:800; line-height:1.45}
+    .approval-gate.show{display:flex; gap:12px; align-items:flex-start}
+    .approval-gate .gate-icon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--amber),var(--orange));color:white;flex:0 0 auto;font-size:1.2rem}
+    .approval-gate strong{color:#7c2d12}
+    .operator-header-text{font-size:.92rem;color:var(--muted);line-height:1.45;margin-top:4px}
+    @media(max-width:820px){.quick-steps{grid-template-columns:1fr}.operator-simple .form-grid{gap:11px}.operator-simple .primary-input input{font-size:1rem}}
+
+
+    .cut-measure{border-color:#bfdbfe;background:linear-gradient(180deg,#ffffff,#eff6ff)}
+    .cut-measure[disabled]{opacity:.64; filter:grayscale(.1)}
+    .cut-lock-note{display:flex;gap:10px;align-items:flex-start;margin-bottom:12px;border:1px solid var(--line);background:#f8fafc;border-radius:16px;padding:12px;color:var(--navy);font-weight:800;line-height:1.42}
+    .cut-lock-note .icon{width:34px;height:34px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--navy),var(--teal));color:#fff}
+    .time-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .operator-approved-panel{margin-top:14px;border:1px solid #bfdbfe;border-radius:18px;padding:14px;background:linear-gradient(180deg,#fff,#eff6ff)}
+    .operator-approved-panel h3{margin:0 0 10px;color:var(--navy);font-size:1rem;text-transform:uppercase;letter-spacing:.02em}
+    .operator-approved-list{display:grid;gap:10px}
+    .operator-approved-item{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff;box-shadow:0 6px 18px rgba(11,42,91,.06)}
+    .operator-approved-item strong{color:var(--navy)}
+    .action-hint{font-size:.86rem;color:var(--muted);line-height:1.35;margin-top:6px}
+
+
+
+    /* v3.8 - limpieza operativa, exportación por rol y analítica */
+    .app-menu{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin:12px 0 16px;
+      padding:10px;
+      border:1px solid rgba(215,224,236,.9);
+      border-radius:20px;
+      background:rgba(255,255,255,.72);
+      box-shadow:var(--shadow-soft);
+    }
+    .app-menu button{flex:0 0 auto; min-width:140px}
+    .page-active{background:linear-gradient(135deg,var(--teal),var(--navy)) !important; color:#fff !important; border-color:transparent !important}
+    body[data-page="analytics"] .main-grid,
+    body[data-page="analytics"] .table-card{display:none !important}
+    body[data-page="operation"] .analytics-section{display:none !important}
+    body[data-app-role="OPERARIO"] .analytics-only,
+    body[data-app-role="PENDIENTE"] .analytics-only,
+    body[data-app-role="SIN_SESION"] .analytics-only{display:none !important}
+    body[data-app-role="OPERARIO"] .dashboard-card,
+    body[data-app-role="OPERARIO"] .table-card{display:none !important}
+    body[data-app-role="OPERARIO"] .main-grid{grid-template-columns:1fr}
+    body:not([data-app-role="LIDER_LOGISTICO"]) .leader-export-only{display:none !important}
+    .legacy-chart{display:none !important}
+    .toolbar{position:static !important; top:auto !important; z-index:auto !important; backdrop-filter:none !important}
+    .operator-simple textarea{min-height:140px; resize:vertical; line-height:1.42}
+    .operator-simple .field{min-width:0}
+    .operator-simple input,
+    .operator-simple textarea,
+    .operator-simple select{font-size:16px}
+    .field.expanded{grid-column:auto !important}
+    .field.expanded input,.field.expanded textarea{box-shadow:none !important}
+    .exports-minimal{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+    .export-role-note{margin-top:10px; color:var(--muted); font-weight:800; font-size:.85rem; line-height:1.35}
+    .analytics-section{margin-top:18px}
+    .analytics-filter-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;align-items:end;margin-bottom:14px}
+    .analytics-filter-grid .field{grid-column:span 3}
+    .analytics-filter-grid .field.search-wide{grid-column:span 4}
+    .analytics-filter-grid .actions{grid-column:span 2;display:flex;gap:8px;flex-wrap:wrap}
+    .analytics-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin:14px 0}
+    .analytics-kpi{border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#f8fbff);padding:15px;box-shadow:0 8px 20px rgba(11,42,91,.06)}
+    .analytics-kpi .num{font-size:1.75rem;font-weight:1000;color:var(--navy);line-height:1}
+    .analytics-kpi .txt{font-size:.76rem;color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin-top:7px;line-height:1.25}
+    .analytics-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .analytics-chart{border:1px solid var(--line);border-radius:18px;background:#fff;padding:16px;min-height:220px;box-shadow:0 8px 20px rgba(11,42,91,.05)}
+    .analytics-chart.full{grid-column:1/-1}
+    .analytics-chart h3{margin:0 0 12px;color:var(--navy);font-size:1rem;text-transform:uppercase;letter-spacing:.03em}
+    .analytics-chart .bar-row{grid-template-columns:170px 1fr 70px;margin:10px 0}
+    .analytics-comment{border:1px solid #bfdbfe;border-radius:18px;background:linear-gradient(135deg,#eff6ff,#ffffff);padding:15px;color:var(--navy);font-weight:800;line-height:1.48;margin:12px 0}
+    .analytics-comment ul{margin:8px 0 0 18px;padding:0}
+    .mini-table{width:100%;border-collapse:separate;border-spacing:0;min-width:760px}
+    .mini-table th,.mini-table td{font-size:.82rem;padding:9px;border-bottom:1px solid var(--line-2);vertical-align:top}
+    .mini-table th{position:sticky;top:0;background:#f8fafc;color:var(--navy);font-weight:1000;text-transform:uppercase;letter-spacing:.03em}
+    @media(max-width:1050px){.analytics-kpis{grid-template-columns:repeat(3,1fr)}.analytics-grid{grid-template-columns:1fr}.analytics-filter-grid .field,.analytics-filter-grid .field.search-wide,.analytics-filter-grid .actions{grid-column:span 6}}
+    @media(max-width:760px){.app-menu{display:grid;grid-template-columns:1fr;gap:8px}.app-menu button{width:100%}.analytics-kpis{grid-template-columns:repeat(2,1fr)}.analytics-filter-grid{grid-template-columns:1fr}.analytics-filter-grid .field,.analytics-filter-grid .field.search-wide,.analytics-filter-grid .actions{grid-column:span 1}.analytics-filter-grid .actions button{flex:1 1 100%}.analytics-chart .bar-row{grid-template-columns:110px 1fr 48px}.operator-simple textarea{min-height:170px}.exports-minimal{grid-template-columns:1fr !important}}
+
+  </style>
+</head>
+<body data-view="auto" data-page="operation" data-session="out" data-app-role="SIN_SESION">
+  <div class="app">
+    <section class="hero">
+      <div class="hero-brand">
+        <div class="logo-badge">
+          <img src="logo-electroingenieria.png" alt="Electroingeniería" />
+        </div>
+        <div class="hero-main">
+          <div class="hero-eyebrow">Registro operativo</div>
+          <h1>Control de corte de cable</h1>
+          <p>Registre el corte, valide el remanente y genere el control diario para envío.</p>
+          <div class="hero-chips" aria-label="Funciones principales">
+            <span class="hero-chip">✓ Registro diario</span>
+            <span class="hero-chip">✓ Exportación Excel</span>
+            <span class="hero-chip">✓ Resumen automático</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <button class="btn btn-ghost btn-small install-btn" id="btnInstall" type="button" hidden>Instalar app</button>
+        <button class="btn btn-ghost btn-small" id="btnSound" type="button">Sonido: ON</button>
+      </div>
+    
+</section>
+
+    <section class="card cloud-card">
+      <div class="card-header">
+        <h2>Ingreso y trazabilidad</h2>
+        <span class="connection-pill warn" id="cloudStatus">Conexión local</span>
+      </div>
+      <div class="card-body">
+        <div class="cloud-grid">
+          <div class="auth-panel">
+            <div class="auth-title"><strong>Usuario operativo</strong><span class="user-chip" id="roleBadge">Sin sesión</span></div>
+            <div id="authLoggedOut" class="logged-out-only">
+              <div class="auth-row">
+                <div class="field"><label for="authName">Nombre</label><input id="authName" placeholder="Nombre del usuario" /></div>
+                <div class="field"><label for="authEmail">Correo *</label><input id="authEmail" type="email" inputmode="email" placeholder="usuario@ei.com.co" /></div>
+                <div class="field"><label for="authPassword">Clave *</label><input id="authPassword" type="password" placeholder="Mínimo 6 caracteres" /></div>
+              </div>
+              <div class="auth-actions">
+                <button type="button" class="btn-primary" id="btnLogin">Ingresar</button>
+                <button type="button" id="btnRegisterUser">Crear clave de ingreso</button>
+              </div>
+              <div class="approval-meta">El usuario debe estar habilitado previamente por Gerencia.</div>
+            </div>
+            <div id="authLoggedIn" class="logged-only" hidden>
+              <div class="approval-meta" id="currentUserText">Usuario activo</div>
+              <div class="auth-actions">
+                <button type="button" class="btn-red" id="btnLogout">Cerrar sesión</button>
+              </div>
+            </div>
+          </div>
+          <div class="auth-panel">
+            <div class="auth-title"><strong>Flujo de aprobación</strong></div>
+            <div class="approval-meta">Operario registra datos mínimos. Si el sobrante queda en 50 m o menor a 50 m, la solicitud queda pendiente y no se continúa el corte hasta aprobación.</div>
+            <div class="auth-actions">
+              <span class="user-chip">&gt;50 m: permitido</span>
+              <span class="user-chip">=50 m: líder</span>
+              <span class="user-chip">&lt;50 m: gerencia</span>
+              <button type="button" class="btn-primary btn-small" id="btnEnableNotifications">Activar avisos</button>
+              <span class="user-chip" id="notifyStatus">Avisos pendientes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card login-required" id="loginRequiredPanel">
+      <div class="card-body">
+        <div class="lock-message">
+          <div class="icon">🔐</div>
+          <div>
+            <strong>Ingrese con su usuario para registrar cortes.</strong><br>
+            La trazabilidad del corte se toma automáticamente del usuario que inicia sesión. El operario solo completa cable, metros, carrete, sobrante y auxiliar de chequeo.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="toolbar">
+      <div class="toolbar-group">
+        <span class="view-label">Vista:</span>
+        <button type="button" class="btn-small active-view" data-view-btn="auto">Auto</button>
+        <button type="button" class="btn-small" data-view-btn="mobile">Móvil</button>
+        <button type="button" class="btn-small" data-view-btn="tablet">Tablet</button>
+        <button type="button" class="btn-small" data-view-btn="desktop">Escritorio</button>
+      </div>
+      <div class="toolbar-group">
+        <button type="button" class="btn-small" id="btnRefresh">Actualizar vista</button>
+        <button type="button" class="btn-small operator-only" id="btnToday">Fecha y hora actual</button>
+      </div>
+    </div>
+
+    <div class="app-menu analytics-only" id="appMenu">
+      <button type="button" class="page-active" data-page-btn="operation">Operación</button>
+      <button type="button" data-page-btn="analytics">Gráficas</button>
+    </div>
+
+    <div class="main-grid">
+      <section class="card operator-only" id="operatorFormCard">
+        <div class="card-header">
+          <div>
+            <h2>Registro rápido de corte</h2>
+            <div class="operator-header-text">Complete solo los datos necesarios. El responsable del corte se toma del usuario activo.</div>
+          </div>
+          <span class="version-pill" style="color:var(--navy); background:#fff; border-color:var(--line)">Operario</span>
+        </div>
+        <div class="card-body operator-simple">
+          <form id="cutForm" autocomplete="off">
+            <div class="quick-steps" aria-label="Pasos de registro">
+              <div class="quick-step"><span>1</span><div>Identifique cable y metros a cortar.</div></div>
+              <div class="quick-step"><span>2</span><div>Registre carrete y metraje disponible.</div></div>
+              <div class="quick-step"><span>3</span><div>Si requiere aprobación, envíela y espere autorización.</div></div>
+            </div>
+
+            <fieldset>
+              <legend>Datos del corte</legend>
+              <div class="form-grid">
+                <div class="field col-4 primary-input"><label for="pedido">Pedido / requerimiento</label><input id="pedido" placeholder="Número de pedido si aplica" /></div>
+                <div class="field col-4 primary-input"><label for="referencia">Cable / referencia *</label><input id="referencia" required placeholder="Referencia o descripción del cable" /></div>
+                <div class="field col-4 primary-input"><label for="metrosSolicitados">Metros a cortar *</label><input type="number" min="0" step="0.01" id="metrosSolicitados" required placeholder="0" /></div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Carrete y sobrante</legend>
+              <div class="form-grid">
+                <div class="field col-4 primary-input"><label for="carreteLote">Carrete / lote *</label><input id="carreteLote" required placeholder="ID del carrete o lote" /></div>
+                <div class="field col-4 primary-input"><label for="disponibleAntes">Metros disponibles en carrete *</label><input type="number" min="0" step="0.01" id="disponibleAntes" required placeholder="0" /></div>
+                <div class="field col-2 readonly-result"><label for="remanenteProyectado">Sobrante</label><input id="remanenteProyectado" class="readonly" readonly /></div>
+                <div class="field col-2 readonly-result"><label for="restriccionRemanente">Condición</label><input id="restriccionRemanente" class="readonly" readonly /></div>
+              </div>
+              <div class="approval-gate" id="approvalGate">
+                <div class="gate-icon">⚠️</div>
+                <div id="approvalGateText"><strong>Requiere aprobación.</strong><br>Guarde la solicitud y no continúe el corte hasta recibir aprobación.</div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Chequeo y aprobación</legend>
+              <div class="form-grid">
+                <div class="field col-6 primary-input"><label for="responsableChequeo">Auxiliar de chequeo / recolección</label><input id="responsableChequeo" placeholder="Nombre del auxiliar que chequeó" /></div>
+                <div class="field col-6 session-filled"><label for="responsableCorte">Responsable del corte</label><input id="responsableCorte" readonly placeholder="Se toma del usuario activo" /><div class="adaptive-hint" id="responsableCorteInfo">Se completa automáticamente con el usuario activo.</div></div>
+                <div class="field col-12 primary-input"><label for="motivoAutorizacion">Razón / observación de aprobación</label><textarea id="motivoAutorizacion" placeholder="Solo cuando el sobrante sea igual o menor a 50 m, indique la razón"></textarea></div>
+                <div class="col-12 status-panel" id="statusPanel">
+                  <div class="status-label">Estado calculado</div>
+                  <div class="status-value" id="estadoCalculado">Pendiente</div>
+                  <div class="status-detail" id="estadoDetalle">Complete los datos para calcular el estado.</div>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset id="cutMeasureSection" class="cut-measure" disabled>
+              <legend>Medición del corte</legend>
+              <div class="cut-lock-note" id="cutLockNote"><span class="icon">🔒</span><div>El corte se desbloquea cuando no requiere aprobación o cuando la solicitud queda aprobada.</div></div>
+              <div class="form-grid">
+                <div class="field col-3"><label for="fechaCorte">Fecha corte</label><input type="date" id="fechaCorte" readonly /></div>
+                <div class="field col-3"><label for="horaInicio">Hora inicio</label><input type="time" id="horaInicio" readonly /></div>
+                <div class="field col-3"><label for="horaFin">Hora final</label><input type="time" id="horaFin" readonly /></div>
+                <div class="field col-3 readonly-result"><label for="duracionCorte">Duración</label><input id="duracionCorte" class="readonly" readonly placeholder="--" /></div>
+                <div class="field col-3"><label for="metrajeFinal">Metraje final</label><input type="number" min="0" step="0.01" id="metrajeFinal" placeholder="0" /></div>
+                <div class="field col-3"><label for="remanenteReal">Sobrante real</label><input type="number" min="0" step="0.01" id="remanenteReal" placeholder="0" /></div>
+                <div class="field col-6"><label>Acciones de tiempo</label><div class="time-actions"><button type="button" class="btn-green" id="btnStartCut">Iniciar corte</button><button type="button" class="btn-orange" id="btnEndCut">Finalizar corte</button></div><div class="action-hint">Use estos botones para medir la duración real del corte.</div></div>
+                <div class="col-12 checks">
+                  <label class="check-card"><input type="checkbox" id="corteUniforme" checked /> Corte uniforme</label>
+                  <label class="check-card"><input type="checkbox" id="tramoRotulado" checked /> Tramo rotulado</label>
+                  <label class="check-card"><input type="checkbox" id="evidenciaRegistro" checked /> Evidencia/registro realizado</label>
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="system-hidden" aria-hidden="true">
+              <input type="hidden" id="registroId" />
+              <input type="hidden" id="consecutivoActual" />
+              <input type="hidden" id="aprobacionTipoActual" />
+              <input type="hidden" id="aprobacionEstadoActual" />
+              <input type="hidden" id="aprobadoPorActual" />
+              <input type="hidden" id="fechaAprobacionActual" />
+              <input type="date" id="fechaSolicitud" />
+              <input type="time" id="horaSolicitud" />
+              <input id="clienteProceso" value="Logística" />
+              <input id="calibre" />
+              <input id="tipoCable" />
+              <input id="colorCable" />
+              <input id="ubicacionProducto" />
+              <input id="autorizadoMenor50" value="NO" />
+              <input id="autorizadoPor" />
+              <input id="evidenciaTexto" value="Registro digital" />
+              <input type="hidden" id="franjaAtencion" value="MISMO_DIA_TARDE" />
+              <select id="cumpleTiempo"><option value="SI">Sí</option><option value="NO">No</option><option value="PENDIENTE">Pendiente</option></select>
+              <select id="novedad"><option value="SIN_NOVEDAD">Sin novedad</option><option value="RETRABAJO_NO_CONFORME">Retrabajo / no conforme</option><option value="SUSPENDIDO">Suspendido</option><option value="OTRA">Otra</option></select>
+              <textarea id="observacion"></textarea>
+              <button type="button" id="btnAutoFranja">Calcular franja automática</button>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn-orange" type="button" id="btnSendApproval" hidden>Enviar aprobación</button>
+              <button class="btn-primary" type="submit" id="btnSaveRecord">Guardar corte</button>
+              <button type="button" id="btnClearForm">Limpiar</button>
+            </div>
+          </form>
+          <div class="operator-approved-panel" id="operatorApprovedPanel" hidden>
+            <h3>Cortes aprobados para finalizar</h3>
+            <div class="operator-approved-list" id="operatorApprovedList"></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card dashboard-card">
+        <div class="card-header">
+          <h2>Resumen de registros</h2>
+          <span class="version-pill" style="color:var(--navy); background:#fff; border-color:var(--line)">Resumen del turno</span>
+        </div>
+        <div class="card-body">
+          <div class="role-operational-note" id="roleOperationalNote"><span class="icon">📊</span><div>Panel de seguimiento activo. Este rol no registra cortes; solo consulta indicadores, revisa solicitudes pendientes y gestiona permisos según autorización.</div></div>
+          <div class="dashboard-grid" id="kpiGrid"></div>
+
+          <div class="chart-card legacy-chart">
+            <p class="chart-title">Cumplimiento general</p>
+            <div class="donut-wrap">
+              <svg class="donut" viewBox="0 0 120 120" role="img" aria-label="Porcentaje de cumplimiento">
+                <circle cx="60" cy="60" r="48" stroke="#edf2f7" stroke-width="14" fill="none" />
+                <circle id="donutValue" cx="60" cy="60" r="48" stroke="var(--green)" stroke-width="14" stroke-linecap="round" fill="none" stroke-dasharray="0 301.59" transform="rotate(-90 60 60)" />
+                <text id="donutText" x="60" y="58" text-anchor="middle" font-size="22">0%</text>
+                <text x="60" y="76" text-anchor="middle" font-size="9" fill="#667085">Conforme</text>
+              </svg>
+              <div class="legend" id="legendStatus"></div>
+            </div>
+          </div>
+
+          <div class="chart-card legacy-chart">
+            <p class="chart-title">Distribución por estado</p>
+            <div class="bars" id="statusBars"></div>
+          </div>
+
+          <div class="chart-card leader-export-only" id="exportPanel">
+            <p class="chart-title">Exportar control</p>
+            <div class="exports exports-minimal">
+              <button type="button" class="btn-green" data-export="xls">Excel .xlsx</button>
+              <button type="button" class="btn-primary" data-export="txt">Archivo plano TXT |</button>
+            </div>
+            <div class="export-role-note">Exportación disponible solo para Líder Logístico. Los archivos conservan columnas separadas para consolidación y cargue posterior.</div>
+            <div class="share-panel" id="sharePanel"></div>
+          </div>
+
+          <div class="chart-card cloud-only" id="approvalPanel" hidden>
+            <p class="chart-title">Aprobaciones pendientes</p>
+            <div id="approvalList" class="approval-list"><div class="empty-soft">No hay solicitudes pendientes.</div></div>
+          </div>
+
+          <div class="chart-card admin-only" id="usersPanel" hidden>
+            <p class="chart-title">Usuarios</p>
+            <div class="user-create-box">
+              <h4>Habilitar usuario</h4>
+              <div class="user-create-grid">
+                <div class="field"><label for="newUserName">Nombre</label><input id="newUserName" placeholder="Nombre del usuario" /></div>
+                <div class="field"><label for="newUserEmail">Correo</label><input id="newUserEmail" type="email" inputmode="email" placeholder="usuario@ei.com.co" /></div>
+                <div class="field"><label for="newUserRole">Rol</label><select id="newUserRole"><option value="OPERARIO">Operario</option><option value="LIDER_LOGISTICO">Líder Logístico</option><option value="GERENCIA">Gerencia</option></select></div>
+                <div class="field"><label for="newUserPassword">Clave inicial</label><input id="newUserPassword" type="text" value="Cable2026*" placeholder="Clave inicial" /></div>
+              </div>
+              <div class="auth-actions"><button type="button" class="btn-primary" id="btnPreapproveUser">Crear usuario</button></div>
+              <div class="approval-meta">El usuario queda creado y habilitado. Debe ingresar con su correo y la clave inicial asignada.</div>
+            </div>
+            <div id="usersList" class="users-list"><div class="empty-soft">No hay usuarios para mostrar.</div></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+
+
+    <section class="card analytics-section analytics-only" id="analyticsSection">
+      <div class="card-header">
+        <div>
+          <h2>Gráficas de productividad</h2>
+          <div class="operator-header-text">Filtre por fecha, responsable, referencia o carrete para revisar rendimiento, horas hombre y trazabilidad del corte.</div>
+        </div>
+        <span class="version-pill" style="color:var(--navy); background:#fff; border-color:var(--line)">Indicadores</span>
+      </div>
+      <div class="card-body">
+        <div class="analytics-filter-grid">
+          <div class="field"><label for="graphDateFrom">Desde</label><input type="date" id="graphDateFrom" /></div>
+          <div class="field"><label for="graphDateTo">Hasta</label><input type="date" id="graphDateTo" /></div>
+          <div class="field search-wide"><label for="graphSearch">Buscar corte específico</label><input id="graphSearch" placeholder="Pedido, carrete, referencia o responsable" /></div>
+          <div class="actions"><button type="button" class="btn-primary" id="btnApplyGraphs">Filtrar</button><button type="button" id="btnClearGraphs">Limpiar</button></div>
+        </div>
+        <div class="analytics-kpis" id="analyticsKpis"></div>
+        <div class="analytics-comment" id="analyticsComment">Seleccione un rango de fechas para ver el análisis.</div>
+        <div class="analytics-grid">
+          <div class="analytics-chart"><h3>Cortes por día</h3><div class="bars" id="graphByDay"></div></div>
+          <div class="analytics-chart"><h3>Estados del proceso</h3><div class="bars" id="graphByStatus"></div></div>
+          <div class="analytics-chart"><h3>Cortes por tipo / referencia</h3><div class="bars" id="graphByType"></div></div>
+          <div class="analytics-chart"><h3>Productividad por responsable</h3><div class="bars" id="graphByPerson"></div></div>
+          <div class="analytics-chart"><h3>Tiempo promedio por tipo</h3><div class="bars" id="graphAvgType"></div></div>
+          <div class="analytics-chart"><h3>Metros procesados por día</h3><div class="bars" id="graphMetersDay"></div></div>
+          <div class="analytics-chart full"><h3>Detalle filtrado</h3><div class="table-scroll" id="analyticsDetail"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card table-card">
+      <div class="card-header">
+        <h2>Registros acumulados</h2>
+        <span class="version-pill" style="color:var(--navy); background:#fff; border-color:var(--line)" id="countPill">0 registros</span>
+      </div>
+      <div class="card-body">
+        <div class="table-tools">
+          <input class="search" id="searchInput" placeholder="Buscar por pedido, cliente, cable, carrete o responsable..." />
+          <div class="toolbar-group">
+            <select id="filterStatus" style="max-width:240px"><option value="TODOS">Todos los estados</option><option value="CONFORME">Conforme</option><option value="AUTORIZADO">Autorizado</option><option value="SUSPENDIDO">Suspendido</option><option value="NO_CONFORME">No conforme</option><option value="REVISAR">Revisar</option><option value="PENDIENTE_LIDER">Pendiente líder</option><option value="PENDIENTE_GERENCIA">Pendiente gerencia</option><option value="RECHAZADO">Rechazado</option></select>
+            <button type="button" class="btn-small" id="btnPrint">Imprimir</button>
+          </div>
+        </div>
+        <div id="tableContainer"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const VERSION = '3.8.3-FIREBASE-FIX';
+    const STORAGE_KEY = 'control_corte_cable_v2';
+    const DEFAULT_EMAIL_TO = 'j.perez@ei.com.co';
+    const EMAIL_TO_KEY = 'control_corte_email_to';
+    let soundEnabled = true;
+    let records = loadRecords();
+    let lastExportFile = null;
+    let franjaManual = false;
+    let submitIntent = 'record';
+
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyAE1v79wks-WHFqPXJBXni8f3WhnEX__ww",
+      authDomain: "control-corte-cable.firebaseapp.com",
+      projectId: "control-corte-cable",
+      storageBucket: "control-corte-cable.firebasestorage.app",
+      messagingSenderId: "477688924281",
+      appId: "1:477688924281:web:75a37db8dd036f8912aca8",
+      measurementId: "G-E98F7K9S51"
+    };
+    const ADMIN_EMAILS = ['j.perez@ei.com.co'];
+    let firebaseReady = false;
+    let firebaseInitPromise = null;
+    let firebaseObserverReady = false;
+    let currentUser = null;
+    let currentProfile = null;
+    let cloudRecordsUnsub = null;
+    let cloudUsersUnsub = null;
+    let cloudPreUsersUnsub = null;
+    let fb = {};
+    const NOTIFY_KEY = 'control_corte_notify_enabled';
+    let approvalNotificationsEnabled = localStorage.getItem(NOTIFY_KEY) === '1';
+    let approvalNotificationInitialized = false;
+    let knownApprovalNoticeKeys = new Set();
+
+    const columns = [
+      ['CONSECUTIVO','Consecutivo'],
+      ['FECHA_SOLICITUD','Fecha Solicitud'],
+      ['HORA_SOLICITUD','Hora Solicitud'],
+      ['PEDIDO_REQUERIMIENTO','Pedido/Requerimiento'],
+      ['CLIENTE_PROCESO','Cliente/Proceso'],
+      ['REFERENCIA_CABLE','Referencia Cable'],
+      ['CALIBRE','Calibre'],
+      ['TIPO_CABLE','Tipo Cable'],
+      ['COLOR','Color'],
+      ['METROS_SOLICITADOS','Metros Solicitados'],
+      ['UBICACION_PRODUCTO','Ubicación Producto'],
+      ['CARRETE_LOTE','Carrete/Lote'],
+      ['METROS_DISPONIBLES_ANTES','Metros Disponibles Antes'],
+      ['REMANENTE_PROYECTADO','Remanente Proyectado'],
+      ['RESTRICCION_REMANENTE','Restricción Remanente'],
+      ['AUTORIZADO_MENOR_50','Autorizado Menor 50'],
+      ['AUTORIZADO_POR','Autorizado Por'],
+      ['MOTIVO_AUTORIZACION','Motivo Autorización'],
+      ['RESPONSABLE_CHEQUEO','Responsable Chequeo'],
+      ['RESPONSABLE_CORTE','Responsable Corte'],
+      ['RESPONSABLE_CORTE_UID','Responsable Corte UID'],
+      ['RESPONSABLE_CORTE_CORREO','Responsable Corte Correo'],
+      ['RESPONSABLE_CORTE_ROL','Responsable Corte Rol'],
+      ['FECHA_CORTE','Fecha Corte'],
+      ['HORA_INICIO','Hora Inicio'],
+      ['HORA_FIN','Hora Fin'],
+      ['METRAJE_FINAL','Metraje Final'],
+      ['REMANENTE_REAL','Remanente Real'],
+      ['CORTE_UNIFORME','Corte Uniforme'],
+      ['TRAMO_ROTULADO','Tramo Rotulado'],
+      ['EVIDENCIA_REGISTRO','Evidencia Registro'],
+      ['EVIDENCIA_DESCRIPCION','Evidencia Descripción'],
+      ['FRANJA_ATENCION','Franja Atención'],
+      ['CUMPLE_TIEMPO','Cumple Tiempo'],
+      ['NOVEDAD','Novedad'],
+      ['OBSERVACION','Observación'],
+      ['CUMPLE_REMANENTE','Cumple Remanente'],
+      ['CUMPLE_CALIDAD','Cumple Calidad'],
+      ['ESTADO_CORTE','Estado Corte'],
+      ['APROBACION_TIPO','Aprobación Tipo'],
+      ['APROBACION_ESTADO','Aprobación Estado'],
+      ['APROBADO_POR','Aprobado Por'],
+      ['FECHA_APROBACION','Fecha Aprobación'],
+      ['SOLICITANTE_UID','Solicitante UID'],
+      ['SOLICITANTE_CORREO','Solicitante Correo'],
+      ['SOLICITANTE_NOMBRE','Solicitante Nombre'],
+      ['SOLICITANTE_ROL','Solicitante Rol'],
+      ['FECHA_REGISTRO_SISTEMA','Fecha Registro Sistema'],
+      ['HORA_REGISTRO_SISTEMA','Hora Registro Sistema']
+    ];
+
+    const $ = (id)=>document.getElementById(id);
+    const val = (id)=>($(id)?.value || '').trim();
+    const num = (id)=>parseFloat(String(val(id)).replace(',','.')) || 0;
+    const yn = (id)=>$(id).checked ? 'SI' : 'NO';
+
+    function loadRecords(){
+      try{return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') || []}
+      catch(e){return []}
+    }
+    function saveRecords(){localStorage.setItem(STORAGE_KEY, JSON.stringify(records));}
+    function pad(n){return String(n).padStart(2,'0')}
+    function nowParts(){const d=new Date(); return {date:`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`, time:`${pad(d.getHours())}:${pad(d.getMinutes())}`, stamp:`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`}}
+    function todayHuman(){const n=nowParts(); return n.date.split('-').reverse().join('/') + ' ' + n.time}
+    function normalizeDecimal(v){ if(v === '' || v === null || v === undefined) return ''; const n = Number(String(v).replace(',','.')); return Number.isFinite(n) ? String(n.toFixed(2)).replace(/\.00$/,'') : String(v); }
+    function cleanText(value){return String(value ?? '').replace(/\s+/g,' ').trim();}
+    function escapeHtml(value){return String(value ?? '').replace(/[&<>'"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[m]));}
+
+    function beep(type='ok'){
+      if(!soundEnabled) return;
+      try{
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const map = {ok:[660,.045], click:[420,.035], export:[780,.055], error:[180,.09]};
+        const [freq,dur] = map[type] || map.ok;
+        osc.frequency.value = freq;
+        osc.type = type === 'error' ? 'sawtooth' : 'sine';
+        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(type === 'error' ? 0.07 : 0.04, ctx.currentTime + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+        osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + dur + .02);
+      }catch(e){}
+    }
+    function toast(message, type='ok'){
+      const t=$('toast'); t.textContent=message; t.classList.add('show'); beep(type); clearTimeout(toast._timer); toast._timer=setTimeout(()=>t.classList.remove('show'), 2600);
+    }
+
+    function setCurrentDateTime(){
+      const n=nowParts();
+      if(!$('fechaSolicitud').value) $('fechaSolicitud').value=n.date;
+      if(!$('horaSolicitud').value) $('horaSolicitud').value=n.time;
+      if(!$('fechaCorte').value) $('fechaCorte').value=n.date;
+    }
+
+    function calcRemanent(){
+      const disponible = num('disponibleAntes');
+      const solicitado = num('metrosSolicitados');
+      const hasValues = Number.isFinite(disponible) && Number.isFinite(solicitado) && (disponible > 0 || solicitado > 0);
+      const rem = hasValues ? +(disponible - solicitado).toFixed(2) : 0;
+      $('remanenteProyectado').value = hasValues ? normalizeDecimal(rem) : '';
+      if($('remanenteReal')) $('remanenteReal').value = hasValues ? normalizeDecimal(rem) : '';
+      if($('metrajeFinal') && cutUnlocked()) $('metrajeFinal').value = solicitado > 0 ? normalizeDecimal(solicitado) : '';
+      let restriccion = '';
+      if(hasValues){
+        if(rem > 50) restriccion = '>50 m';
+        else if(rem === 50) restriccion = '=50 m';
+        else restriccion = '<50 m';
+      }
+      $('restriccionRemanente').value = restriccion;
+
+      if($('autorizadoMenor50')) $('autorizadoMenor50').value = 'NO';
+      if($('autorizadoPor')) $('autorizadoPor').value = rem < 50 ? 'Gerencia' : (rem === 50 ? 'Jefatura Logística' : '');
+      if($('novedad')) $('novedad').value = (hasValues && rem <= 50) ? 'SUSPENDIDO' : 'SIN_NOVEDAD';
+      if($('cumpleTiempo')) $('cumpleTiempo').value = (hasValues && rem <= 50) ? 'PENDIENTE' : 'SI';
+      if($('observacion')) $('observacion').value = val('motivoAutorizacion');
+
+      const gate = $('approvalGate');
+      const gateText = $('approvalGateText');
+      if(gate && hasValues && rem <= 50){
+        gate.classList.add('show');
+        gateText.innerHTML = rem < 50
+          ? '<strong>Requiere autorización de Gerencia.</strong><br>Guarde la solicitud y no continúe el corte hasta recibir aprobación.'
+          : '<strong>Requiere validación de Líder Logístico.</strong><br>Guarde la solicitud y no continúe el corte hasta recibir aprobación.';
+      }else if(gate){
+        gate.classList.remove('show');
+        if(gateText) gateText.innerHTML = '<strong>Requiere aprobación.</strong><br>Guarde la solicitud y no continúe el corte hasta recibir aprobación.';
+      }
+      autoFranja();
+      updateCutWorkflow();
+      updateStatusPanel();
+    }
+
+
+    function selectedRemanent(){
+      const raw = $('remanenteProyectado') ? $('remanenteProyectado').value : '';
+      const n = Number(String(raw).replace(',','.'));
+      return Number.isFinite(n) ? n : NaN;
+    }
+    function approvalRequiredNow(){
+      const rem = selectedRemanent();
+      return Number.isFinite(rem) && rem <= 50;
+    }
+    function currentFormApproved(){
+      return val('aprobacionEstadoActual') === 'APROBADO';
+    }
+    function cutUnlocked(){
+      const rem = selectedRemanent();
+      return Number.isFinite(rem) && (rem > 50 || currentFormApproved());
+    }
+    function setFieldsetDisabled(fieldset, disabled){
+      if(!fieldset) return;
+      fieldset.disabled = !!disabled;
+      fieldset.classList.toggle('disabled-section', !!disabled);
+    }
+    function updateCutWorkflow(){
+      const rem = selectedRemanent();
+      const hasRem = Number.isFinite(rem);
+      const requires = hasRem && rem <= 50;
+      const approved = currentFormApproved();
+      const unlocked = hasRem && (rem > 50 || approved);
+      const measure = $('cutMeasureSection');
+      const lock = $('cutLockNote');
+      const sendBtn = $('btnSendApproval');
+      const saveBtn = $('btnSaveRecord');
+      setFieldsetDisabled(measure, !unlocked);
+      if(sendBtn) sendBtn.hidden = !(requires && !approved);
+      if(saveBtn){
+        saveBtn.disabled = requires && !approved;
+        saveBtn.textContent = approved ? 'Guardar corte aprobado' : 'Guardar corte';
+      }
+      if(lock){
+        if(!hasRem) lock.innerHTML = '<span class="icon">🔒</span><div>Ingrese metros y carrete para habilitar el corte.</div>';
+        else if(requires && !approved) lock.innerHTML = '<span class="icon">⏳</span><div><strong>Corte bloqueado.</strong><br>Envíe la aprobación y espere respuesta antes de iniciar el corte.</div>';
+        else if(approved) lock.innerHTML = '<span class="icon">✅</span><div><strong>Aprobación recibida.</strong><br>Ya puede iniciar el corte y registrar las horas.</div>';
+        else lock.innerHTML = '<span class="icon">✅</span><div><strong>Corte habilitado.</strong><br>Registre hora de inicio, hora final y validación del tramo.</div>';
+      }
+      if(!unlocked && requires && !approved){
+        if($('fechaCorte')) $('fechaCorte').value = '';
+        if($('horaInicio')) $('horaInicio').value = '';
+        if($('horaFin')) $('horaFin').value = '';
+        if($('metrajeFinal')) $('metrajeFinal').value = '';
+        if($('duracionCorte')) $('duracionCorte').value = '--';
+      }
+      if(unlocked && $('metrajeFinal') && !$('metrajeFinal').value && val('metrosSolicitados')) $('metrajeFinal').value = val('metrosSolicitados');
+      if(unlocked && $('remanenteReal') && !$('remanenteReal').value && $('remanenteProyectado')) $('remanenteReal').value = $('remanenteProyectado').value;
+      updateDuration();
+    }
+    function updateDuration(){
+      if(!$('duracionCorte')) return;
+      const ini = val('horaInicio'); const fin = val('horaFin');
+      if(!ini || !fin){ $('duracionCorte').value='--'; return; }
+      const [h1,m1]=ini.split(':').map(Number); const [h2,m2]=fin.split(':').map(Number);
+      if(!Number.isFinite(h1)||!Number.isFinite(h2)){ $('duracionCorte').value='--'; return; }
+      let mins=(h2*60+m2)-(h1*60+m1); if(mins<0) mins+=24*60;
+      const h=Math.floor(mins/60), m=mins%60;
+      $('duracionCorte').value = h ? `${h} h ${m} min` : `${m} min`;
+    }
+    function startCutTime(){
+      if(!cutUnlocked()) return toast('El corte aún está bloqueado por aprobación.', 'error');
+      const n=nowParts();
+      $('fechaCorte').value = n.date;
+      $('horaInicio').value = n.time;
+      $('horaFin').value = '';
+      $('metrajeFinal').value = val('metrosSolicitados');
+      $('remanenteReal').value = $('remanenteProyectado').value;
+      updateDuration();
+      toast('Hora de inicio registrada', 'ok');
+    }
+    function endCutTime(){
+      if(!cutUnlocked()) return toast('El corte aún está bloqueado por aprobación.', 'error');
+      if(!val('horaInicio')) startCutTime();
+      const n=nowParts();
+      $('horaFin').value = n.time;
+      if(!$('fechaCorte').value) $('fechaCorte').value = n.date;
+      $('metrajeFinal').value = val('metrosSolicitados');
+      $('remanenteReal').value = $('remanenteProyectado').value;
+      $('corteUniforme').checked = true;
+      $('tramoRotulado').checked = true;
+      $('evidenciaRegistro').checked = true;
+      updateDuration();
+      updateStatusPanel();
+      toast('Hora final registrada', 'ok');
+    }
+
+    function setSegmentValue(id, value, manual=false){
+      const input = $(id);
+      if(!input) return;
+      input.value = value;
+      if(id === 'franjaAtencion' && manual) franjaManual = true;
+      document.querySelectorAll(`[data-segment="${id}"] .seg-option`).forEach(btn=>{
+        const active = btn.dataset.value === value;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      updateStatusPanel();
+    }
+
+    function autoFranja(force=false){
+      if(franjaManual && !force) return;
+      const h = val('horaSolicitud');
+      if(!h) return;
+      const rem = Number(String($('remanenteProyectado').value).replace(',','.'));
+      const authorized = val('autorizadoMenor50') === 'SI';
+      let nextValue = h <= '11:00' ? 'MISMO_DIA_TARDE' : 'DIA_HABIL_SIGUIENTE_MANANA';
+      if(Number.isFinite(rem) && rem < 50 && !authorized) nextValue = 'SUSPENDIDO_NOVEDAD_AUTORIZACION';
+      setSegmentValue('franjaAtencion', nextValue, false);
+    }
+
+    function computeStatusFromForm(){
+      const rem = Number(String($('remanenteProyectado').value).replace(',','.'));
+      const authorized = val('autorizadoMenor50') === 'SI';
+      const hasAuthData = authorized && val('autorizadoPor') && val('motivoAutorizacion');
+      const qualityOk = $('corteUniforme').checked && $('tramoRotulado').checked && $('evidenciaRegistro').checked;
+      const novedad = val('novedad');
+      const franja = val('franjaAtencion');
+      const cumpleTiempo = val('cumpleTiempo');
+      if(!val('referencia') || !val('carreteLote') || !val('metrosSolicitados') || !val('disponibleAntes')) return {estado:'PENDIENTE', label:'Pendiente', detail:'Complete cable, metros a cortar y carrete para calcular el estado.', cls:'status-warn'};
+      if(Number.isFinite(rem) && rem < 50 && !currentFormApproved()) return {estado:'PENDIENTE_GERENCIA', label:'Pendiente gerencia', detail:'Remanente menor a 50 m: requiere autorización de Gerencia antes del corte.', cls:'status-warn'};
+      if(Number.isFinite(rem) && rem === 50 && !currentFormApproved()) return {estado:'PENDIENTE_LIDER', label:'Pendiente líder', detail:'Remanente igual a 50 m: requiere validación del Líder Logístico.', cls:'status-warn'};
+      if(Number.isFinite(rem) && rem <= 50 && currentFormApproved() && (!val('horaInicio') || !val('horaFin'))) return {estado:'APROBADO_PENDIENTE_CORTE', label:'Aprobado, pendiente corte', detail:'La aprobación fue recibida. Registre hora de inicio y finalización.', cls:'status-warn'};
+      if(novedad === 'RETRABAJO_NO_CONFORME' || !qualityOk) return {estado:'NO_CONFORME', label:'No conforme', detail:'Existe retrabajo/no conformidad o falta un control de calidad.', cls:'status-stop'};
+      if(franja === 'SUSPENDIDO_NOVEDAD_AUTORIZACION') return {estado:'SUSPENDIDO', label:'Suspendido', detail:'La solicitud quedó suspendida por novedad o autorización pendiente.', cls:'status-stop'};
+      if(cumpleTiempo === 'NO') return {estado:'REVISAR', label:'Revisar tiempo', detail:'El registro indica incumplimiento de la franja de atención.', cls:'status-warn'};
+      return {estado:'CONFORME', label:'Conforme', detail:'Registro cumple remanente, calidad y trazabilidad mínima.', cls:'status-ok'};
+    }
+
+    function updateStatusPanel(){
+      const st = computeStatusFromForm();
+      const panel=$('statusPanel');
+      panel.className='col-12 status-panel ' + st.cls;
+      $('estadoCalculado').textContent = st.label;
+      $('estadoDetalle').textContent = st.detail;
+    }
+
+    function collectRecord(){
+      const status = computeStatusFromForm();
+      const n=nowParts();
+      const rem = Number(String($('remanenteProyectado').value).replace(',','.'));
+      const metrajeFinal = num('metrajeFinal');
+      const remRealRaw = val('remanenteReal');
+      const remReal = remRealRaw ? parseFloat(remRealRaw.replace(',','.')) : rem;
+      const qualityOk = $('corteUniforme').checked && $('tramoRotulado').checked && $('evidenciaRegistro').checked;
+      const operador = operatorName();
+      let cumpleRemanente = 'NO';
+      if(Number.isFinite(rem)){
+        cumpleRemanente = rem >= 50 ? 'SI' : (val('autorizadoMenor50') === 'SI' ? 'AUTORIZADO' : 'NO');
+      }
+      return {
+        id: val('registroId') || (crypto.randomUUID ? crypto.randomUUID() : 'REG-' + Date.now()),
+        CONSECUTIVO: val('consecutivoActual') || nextConsecutive(),
+        FECHA_SOLICITUD: val('fechaSolicitud'),
+        HORA_SOLICITUD: val('horaSolicitud'),
+        PEDIDO_REQUERIMIENTO: cleanText(val('pedido')),
+        CLIENTE_PROCESO: cleanText(val('clienteProceso')),
+        REFERENCIA_CABLE: cleanText(val('referencia')),
+        CALIBRE: cleanText(val('calibre')),
+        TIPO_CABLE: cleanText(val('tipoCable')),
+        COLOR: cleanText(val('colorCable')),
+        METROS_SOLICITADOS: normalizeDecimal(val('metrosSolicitados')),
+        UBICACION_PRODUCTO: cleanText(val('ubicacionProducto')),
+        CARRETE_LOTE: cleanText(val('carreteLote')),
+        METROS_DISPONIBLES_ANTES: normalizeDecimal(val('disponibleAntes')),
+        REMANENTE_PROYECTADO: normalizeDecimal($('remanenteProyectado').value),
+        RESTRICCION_REMANENTE: $('restriccionRemanente').value,
+        AUTORIZADO_MENOR_50: val('autorizadoMenor50'),
+        AUTORIZADO_POR: cleanText(val('autorizadoPor')),
+        MOTIVO_AUTORIZACION: cleanText(val('motivoAutorizacion')),
+        RESPONSABLE_CHEQUEO: cleanText(val('responsableChequeo')),
+        RESPONSABLE_CORTE: operador,
+        RESPONSABLE_CORTE_UID: currentUser?.uid || '',
+        RESPONSABLE_CORTE_CORREO: currentUser?.email || '',
+        RESPONSABLE_CORTE_ROL: userRole(),
+        FECHA_CORTE: val('fechaCorte'),
+        HORA_INICIO: val('horaInicio'),
+        HORA_FIN: val('horaFin'),
+        METRAJE_FINAL: val('metrajeFinal') ? normalizeDecimal(metrajeFinal) : '',
+        REMANENTE_REAL: val('remanenteReal') ? normalizeDecimal(remReal) : '',
+        CORTE_UNIFORME: yn('corteUniforme'),
+        TRAMO_ROTULADO: yn('tramoRotulado'),
+        EVIDENCIA_REGISTRO: yn('evidenciaRegistro'),
+        EVIDENCIA_DESCRIPCION: cleanText(val('evidenciaTexto')),
+        FRANJA_ATENCION: val('franjaAtencion'),
+        CUMPLE_TIEMPO: val('cumpleTiempo'),
+        NOVEDAD: val('novedad'),
+        OBSERVACION: cleanText(val('observacion') || val('motivoAutorizacion')),
+        CUMPLE_REMANENTE: cumpleRemanente,
+        CUMPLE_CALIDAD: qualityOk ? 'SI' : 'NO',
+        ESTADO_CORTE: status.estado,
+        APROBACION_TIPO: val('aprobacionTipoActual'),
+        APROBACION_ESTADO: val('aprobacionEstadoActual'),
+        APROBADO_POR: val('aprobadoPorActual'),
+        FECHA_APROBACION: val('fechaAprobacionActual'),
+        FECHA_REGISTRO_SISTEMA: n.date,
+        HORA_REGISTRO_SISTEMA: n.time
+      };
+    }
+
+    function nextConsecutive(){
+      const year = new Date().getFullYear();
+      const max = records.reduce((acc,r)=>{
+        const m = String(r.CONSECUTIVO||'').match(/-(\d+)$/); return Math.max(acc, m ? Number(m[1]) : 0);
+      },0)+1;
+      return `CC-${year}-${String(max).padStart(5,'0')}`;
+    }
+
+    function applyQuickDefaultsBeforeSave(){
+      const n = nowParts();
+      if(!$('fechaSolicitud').value) $('fechaSolicitud').value = n.date;
+      if(!$('horaSolicitud').value) $('horaSolicitud').value = n.time;
+      if(!$('clienteProceso').value) $('clienteProceso').value = 'Logística';
+      if(!$('pedido').value) $('pedido').value = 'AUTO-' + nextConsecutive();
+      if(!$('evidenciaTexto').value) $('evidenciaTexto').value = 'Registro digital';
+      if($('observacion')) $('observacion').value = val('motivoAutorizacion');
+      const rem = Number(String($('remanenteProyectado').value).replace(',','.'));
+      if(cutUnlocked()){
+        if(!$('fechaCorte').value) $('fechaCorte').value = n.date;
+        if(!$('metrajeFinal').value) $('metrajeFinal').value = val('metrosSolicitados');
+        if(!$('remanenteReal').value) $('remanenteReal').value = $('remanenteProyectado').value;
+        $('novedad').value = 'SIN_NOVEDAD';
+      }
+      if(Number.isFinite(rem) && rem <= 50 && !currentFormApproved()){
+        $('metrajeFinal').value = '';
+        $('fechaCorte').value = '';
+        $('horaInicio').value = '';
+        $('horaFin').value = '';
+        $('cumpleTiempo').value = 'PENDIENTE';
+        $('novedad').value = 'SUSPENDIDO';
+      }
+    }
+
+    function validateBeforeSave(){
+      if(!currentUser || !currentProfile){ toast('Debe ingresar con usuario para registrar cortes.', 'error'); $('loginRequiredPanel')?.scrollIntoView({behavior:'smooth', block:'center'}); return false; }
+      if(!isRole('OPERARIO')){ toast('Solo el rol Operario puede registrar cortes.', 'error'); return false; }
+      syncOperatorFields();
+      calcRemanent();
+      applyQuickDefaultsBeforeSave();
+      if(!operatorName()){ toast('No se identificó el responsable del corte. Cierre sesión e ingrese nuevamente.', 'error'); return false; }
+      const rem = Number(String($('remanenteProyectado').value).replace(',','.'));
+      const approvalNeeded = Number.isFinite(rem) && rem <= 50;
+      const approved = currentFormApproved();
+      const required = ['referencia','metrosSolicitados','carreteLote','disponibleAntes'];
+      if(submitIntent === 'approval') required.push('motivoAutorizacion');
+      if(submitIntent !== 'approval') required.push('responsableChequeo','horaInicio','horaFin','metrajeFinal','remanenteReal');
+      for(const id of required){
+        if(!val(id)){
+          const label = document.querySelector(`label[for="${id}"]`)?.textContent?.replace('*','') || id;
+          $(id).focus(); toast('Falta completar: ' + label, 'error'); return false;
+        }
+      }
+      if(num('metrosSolicitados') <= 0){ toast('Los metros a cortar deben ser mayores a cero.', 'error'); return false; }
+      if(num('metrosSolicitados') > num('disponibleAntes')){ toast('Los metros a cortar no pueden superar el metraje disponible.', 'error'); return false; }
+      if(approvalNeeded && submitIntent !== 'approval' && !approved){ toast('Este corte requiere aprobación. Use Enviar aprobación y espere respuesta.', 'error'); return false; }
+      if(!approvalNeeded && submitIntent === 'approval'){ toast('Este corte no requiere aprobación. Puede registrar el corte.', 'click'); return false; }
+      return true;
+    }
+
+    function clearForm(full=false){
+      $('cutForm').reset();
+      submitIntent='record';
+      ['registroId','consecutivoActual','aprobacionTipoActual','aprobacionEstadoActual','aprobadoPorActual','fechaAprobacionActual','duracionCorte'].forEach(id=>{ if($(id)) $(id).value=''; });
+      franjaManual=false;
+      document.body.dataset.session = currentUser ? 'in' : 'out';
+    setCurrentDateTime();
+      $('corteUniforme').checked=true; $('tramoRotulado').checked=true; $('evidenciaRegistro').checked=true;
+      setSegmentValue('franjaAtencion', 'MISMO_DIA_TARDE', false);
+      syncOperatorFields();
+      calcRemanent(); updateCutWorkflow(); updateStatusPanel();
+      if(full) toast('Formulario limpio', 'click');
+    }
+
+    async function saveRecord(e){
+      e.preventDefault();
+      if(!currentUser || !currentProfile){ toast('Ingrese con su usuario antes de guardar.', 'error'); $('loginRequiredPanel')?.scrollIntoView({behavior:'smooth', block:'center'}); return; }
+      if(!isRole('OPERARIO')){ toast('Este rol no puede registrar cortes. Use el panel de seguimiento.', 'error'); return; }
+      syncOperatorFields();
+      calcRemanent();
+      if(!validateBeforeSave()) return;
+      const record = applyApprovalWorkflow(collectRecord());
+      records = records.filter(x=>x.id !== record.id);
+      records.unshift(record);
+      saveRecords();
+      renderAll();
+      renderApprovalPanel();
+      try{ await saveRecordToCloud(record); }catch(_e){}
+      clearForm(false);
+      toast(record.APROBACION_ESTADO === 'PENDIENTE' ? 'Solicitud de aprobación enviada. No continuar hasta aprobación.' : 'Corte guardado correctamente', 'ok');
+      submitIntent='record';
+    }
+
+    function statusPill(status){
+      const map={CONFORME:['pill-ok','Conforme'], AUTORIZADO:['pill-auth','Autorizado'], SUSPENDIDO:['pill-stop','Suspendido'], NO_CONFORME:['pill-stop','No conforme'], REVISAR:['pill-warn','Revisar'], PENDIENTE:['pill-blue','Pendiente'], APROBADO_PENDIENTE_CORTE:['pill-auth','Aprobado pend. corte'], PENDIENTE_LIDER:['pill-warn','Pendiente líder'], PENDIENTE_GERENCIA:['pill-warn','Pendiente gerencia'], RECHAZADO:['pill-stop','Rechazado']};
+      const [cls,label]=map[status] || ['pill-blue',status];
+      return `<span class="pill ${cls}">${label}</span>`;
+    }
+    function franjaLabel(v){return ({MISMO_DIA_TARDE:'Mismo día tarde', DIA_HABIL_SIGUIENTE_MANANA:'Día hábil sig. mañana', SUSPENDIDO_NOVEDAD_AUTORIZACION:'Suspendido'})[v] || v;}
+
+    function getFilteredRecords(){
+      const q=val('searchInput').toLowerCase();
+      const f=val('filterStatus');
+      return records.filter(r=>{
+        const statusOk = f === 'TODOS' || r.ESTADO_CORTE === f;
+        const qOk = !q || [r.PEDIDO_REQUERIMIENTO,r.CLIENTE_PROCESO,r.REFERENCIA_CABLE,r.CARRETE_LOTE,r.RESPONSABLE_CORTE,r.RESPONSABLE_CHEQUEO].join(' ').toLowerCase().includes(q);
+        return statusOk && qOk;
+      });
+    }
+
+
+    function isOwnRecord(r){ return currentUser && r.SOLICITANTE_UID === currentUser.uid; }
+    function canContinueRecord(r){
+      return isRole('OPERARIO') && isOwnRecord(r) && r.APROBACION_ESTADO === 'APROBADO' && !r.HORA_FIN;
+    }
+    function rowActionsForRecord(r){
+      const actions=[];
+      if(canContinueRecord(r)) actions.push(`<button type="button" class="btn-small btn-green" onclick="continueRecord('${r.id}')">Continuar corte</button>`);
+      else if(isRole('OPERARIO') && isOwnRecord(r) && r.APROBACION_ESTADO === 'PENDIENTE') actions.push('<span class="pill pill-warn">Esperando aprobación</span>');
+      else if(isRole('OPERARIO') && isOwnRecord(r) && r.APROBACION_ESTADO === 'RECHAZADO') actions.push('<span class="pill pill-stop">Rechazado</span>');
+      if(canDeleteRecords()) actions.push(`<button type="button" class="btn-small btn-red" onclick="deleteRecord('${r.id}')">Eliminar</button>`);
+      return actions.join(' ') || '<span class="pill pill-blue">Registrado</span>';
+    }
+
+    function renderTable(){
+      const list=getFilteredRecords();
+      $('countPill').textContent = `${records.length} registro${records.length===1?'':'s'}`;
+      if(!list.length){ $('tableContainer').innerHTML = '<div class="empty">No hay registros para mostrar.</div>'; return; }
+      const rows = list.map(r=>`
+        <tr>
+          <td><strong>${escapeHtml(r.CONSECUTIVO)}</strong><br><span style="color:#667085">${escapeHtml(r.FECHA_SOLICITUD)} ${escapeHtml(r.HORA_SOLICITUD)}</span></td>
+          <td>${escapeHtml(r.PEDIDO_REQUERIMIENTO)}<br><span style="color:#667085">${escapeHtml(r.CLIENTE_PROCESO)}</span></td>
+          <td>${escapeHtml(r.REFERENCIA_CABLE)}<br><span style="color:#667085">${escapeHtml([r.CALIBRE,r.TIPO_CABLE,r.COLOR].filter(Boolean).join(' · '))}</span></td>
+          <td>${escapeHtml(r.CARRETE_LOTE)}<br><span style="color:#667085">Disp: ${escapeHtml(r.METROS_DISPONIBLES_ANTES)} m · Rem: ${escapeHtml(r.REMANENTE_PROYECTADO)} m</span></td>
+          <td>${escapeHtml(r.RESTRICCION_REMANENTE)}<br>${r.AUTORIZADO_MENOR_50==='SI'?'<span class="pill pill-auth">Autorizado</span>':''}</td>
+          <td>${escapeHtml(r.METRAJE_FINAL)} m<br><span style="color:#667085">Real: ${escapeHtml(r.REMANENTE_REAL)} m</span></td>
+          <td>${escapeHtml(r.RESPONSABLE_CORTE)}<br><span style="color:#667085">Chequeo: ${escapeHtml(r.RESPONSABLE_CHEQUEO||'N/A')}</span></td>
+          <td>${escapeHtml(franjaLabel(r.FRANJA_ATENCION))}<br><span style="color:#667085">Tiempo: ${escapeHtml(r.CUMPLE_TIEMPO)}</span></td>
+          <td>${statusPill(r.ESTADO_CORTE)}<br><span style="color:#667085">Calidad: ${escapeHtml(r.CUMPLE_CALIDAD)}</span>${r.APROBACION_ESTADO==='PENDIENTE'?'<br><span class="pill pill-warn">Aprobación pendiente</span>':''}</td>
+          <td class="row-actions">${rowActionsForRecord(r)}</td>
+        </tr>`).join('');
+      $('tableContainer').innerHTML = `<div class="table-scroll"><table><thead><tr><th>Consecutivo</th><th>Pedido / Cliente</th><th>Cable</th><th>Carrete</th><th>Restricción</th><th>Corte</th><th>Responsable</th><th>Franja</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    }
+
+    function countByStatus(){
+      const counts={CONFORME:0,AUTORIZADO:0,APROBADO_PENDIENTE_CORTE:0,SUSPENDIDO:0,NO_CONFORME:0,REVISAR:0,PENDIENTE_LIDER:0,PENDIENTE_GERENCIA:0,RECHAZADO:0};
+      records.forEach(r=>{counts[r.ESTADO_CORTE]=(counts[r.ESTADO_CORTE]||0)+1});
+      return counts;
+    }
+
+    function renderDashboard(){
+      const total=records.length;
+      const counts=countByStatus();
+      const conformes=counts.CONFORME || 0;
+      const autorizados=counts.AUTORIZADO || 0;
+      const pendientes=(counts.PENDIENTE_LIDER||0)+(counts.PENDIENTE_GERENCIA||0);
+      const aprobadosPendientes=counts.APROBADO_PENDIENTE_CORTE||0;
+      const noConformes=(counts.NO_CONFORME||0)+(counts.SUSPENDIDO||0)+(counts.REVISAR||0)+(counts.RECHAZADO||0);
+      const menor50=records.filter(r=>r.RESTRICCION_REMANENTE === '<50 m').length;
+      const cumplimiento = total ? Math.round((conformes/total)*100) : 0;
+      const tiempoOk = records.filter(r=>r.CUMPLE_TIEMPO === 'SI').length;
+      $('kpiGrid').innerHTML = [
+        ['Total registros', total, 'blue'],
+        ['% conformes', cumplimiento + '%', 'good'],
+        ['Conformes', conformes, 'good'],
+        ['Autorizados <50 m', autorizados, 'warn'],
+        ['Pendientes aprobación', pendientes, 'warn'],
+        ['Aprobados por finalizar', aprobadosPendientes, 'warn'],
+        ['No conformes / suspendidos', noConformes, 'bad'],
+        ['Cumplen tiempo', total ? Math.round((tiempoOk/total)*100)+'%' : '0%', 'blue']
+      ].map(([label,value,cls])=>`<div class="kpi ${cls}"><div class="value">${value}</div><div class="label">${label}</div></div>`).join('');
+      renderDonut(cumplimiento);
+      renderBars(counts, total);
+      $('legendStatus').innerHTML = [
+        ['#0f8f46','Conforme',conformes],['#f36b13','Autorizado',autorizados],['#2563eb','Aprobados por finalizar',aprobadosPendientes],['#f3a400','Pendientes aprobación',pendientes],['#c91523','No conformes / suspendidos',noConformes],['#f3a400','Remanentes <50 m',menor50]
+      ].map(([c,l,v])=>`<div class="legend-item"><span class="dot" style="background:${c}"></span>${l}: <strong>${v}</strong></div>`).join('');
+    }
+
+    function renderDonut(percent){
+      const circ=2*Math.PI*48;
+      $('donutValue').setAttribute('stroke-dasharray', `${(percent/100)*circ} ${circ}`);
+      $('donutText').textContent = percent + '%';
+      $('donutValue').setAttribute('stroke', percent >= 90 ? 'var(--green)' : percent >= 70 ? 'var(--amber)' : 'var(--red)');
+    }
+
+    function renderBars(counts,total){
+      const items=[['CONFORME','Conforme','fill-green'],['AUTORIZADO','Autorizado','fill-orange'],['PENDIENTE_LIDER','Pendiente líder','fill-amber'],['PENDIENTE_GERENCIA','Pendiente gerencia','fill-amber'],['APROBADO_PENDIENTE_CORTE','Aprobado pend. corte','fill-blue'],['REVISAR','Revisar','fill-amber'],['SUSPENDIDO','Suspendido','fill-red'],['NO_CONFORME','No conforme','fill-red'],['RECHAZADO','Rechazado','fill-red']];
+      $('statusBars').innerHTML = items.map(([key,label,cls])=>{
+        const value=counts[key]||0; const pct=total?Math.round((value/total)*100):0;
+        return `<div class="bar-row"><span>${label}</span><div class="bar-track"><div class="bar-fill ${cls}" style="width:${pct}%"></div></div><strong>${value}</strong></div>`;
+      }).join('');
+    }
+
+    function renderOperatorApprovedList(){
+      const panel=$('operatorApprovedPanel'), listEl=$('operatorApprovedList');
+      if(!panel || !listEl) return;
+      const list = records.filter(r=>isRole('OPERARIO') && isOwnRecord(r) && r.APROBACION_ESTADO === 'APROBADO' && !r.HORA_FIN);
+      panel.hidden = !list.length;
+      if(!list.length){ listEl.innerHTML=''; return; }
+      listEl.innerHTML = list.map(r=>`<div class="operator-approved-item"><strong>${escapeHtml(r.CONSECUTIVO || '')} · ${escapeHtml(r.REFERENCIA_CABLE || '')}</strong><div class="approval-meta">Carrete ${escapeHtml(r.CARRETE_LOTE||'')} · Cortar ${escapeHtml(r.METROS_SOLICITADOS||'')} m · Sobrante ${escapeHtml(r.REMANENTE_PROYECTADO||'')} m<br>Aprobado por: ${escapeHtml(r.APROBADO_POR || '')}</div><div class="approval-actions"><button type="button" class="btn-green" onclick="continueRecord('${r.id}')">Continuar corte</button></div></div>`).join('');
+    }
+
+
+
+    function recordDateForAnalytics(r){return r.FECHA_CORTE || r.FECHA_SOLICITUD || r.FECHA_REGISTRO_SISTEMA || '';}
+    function recordMinutes(r){
+      if(!r.HORA_INICIO || !r.HORA_FIN) return 0;
+      const date = r.FECHA_CORTE || r.FECHA_SOLICITUD || todayISO();
+      const start = new Date(`${date}T${r.HORA_INICIO}`);
+      let end = new Date(`${date}T${r.HORA_FIN}`);
+      if(!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime())) return 0;
+      if(end < start) end = new Date(end.getTime() + 24*60*60*1000);
+      return Math.max(0, Math.round((end-start)/60000));
+    }
+    function groupSum(list, keyFn, valueFn=()=>1){
+      const map={};
+      list.forEach(r=>{const k=String(keyFn(r)||'Sin dato'); map[k]=(map[k]||0)+Number(valueFn(r)||0);});
+      return map;
+    }
+    function topEntries(obj, limit=8){return Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,limit);}
+    function analyticsRecords(){
+      const from = val('graphDateFrom');
+      const to = val('graphDateTo');
+      const q = val('graphSearch').toLowerCase();
+      return records.filter(r=>{
+        const d = recordDateForAnalytics(r);
+        const dateOk = (!from || d >= from) && (!to || d <= to);
+        const qOk = !q || [r.CONSECUTIVO,r.PEDIDO_REQUERIMIENTO,r.REFERENCIA_CABLE,r.TIPO_CABLE,r.CARRETE_LOTE,r.RESPONSABLE_CORTE,r.RESPONSABLE_CHEQUEO,r.ESTADO_CORTE].join(' ').toLowerCase().includes(q);
+        return dateOk && qOk;
+      });
+    }
+    function fmtHours(min){const h=min/60; return h ? h.toFixed(h>=10?1:2) : '0';}
+    function renderAnalyticsBar(elId, entries, total, suffix=''){
+      const el=$(elId); if(!el) return;
+      if(!entries.length){el.innerHTML='<div class="empty-soft">Sin datos para el filtro seleccionado.</div>'; return;}
+      const max=Math.max(...entries.map(e=>Number(e[1])||0),1);
+      el.innerHTML = entries.map(([label,value])=>{
+        const pct=Math.max(3, Math.round((Number(value)||0)/max*100));
+        const showVal = typeof value === 'number' ? (Number.isInteger(value)?value:value.toFixed(1)) : value;
+        return `<div class="bar-row"><span title="${escapeHtml(label)}">${escapeHtml(label)}</span><div class="bar-track"><div class="bar-fill fill-blue" style="width:${pct}%"></div></div><strong>${showVal}${suffix}</strong></div>`;
+      }).join('');
+    }
+    function renderAnalytics(){
+      if(!$('analyticsSection')) return;
+      const list=analyticsRecords();
+      const completed=list.filter(r=>r.HORA_INICIO && r.HORA_FIN);
+      const totalMin=completed.reduce((s,r)=>s+recordMinutes(r),0);
+      const hours=totalMin/60;
+      const totalMeters=list.reduce((s,r)=>s+(parseFloat(String(r.METRAJE_FINAL||r.METROS_SOLICITADOS||0).replace(',','.'))||0),0);
+      const avgMin=completed.length?Math.round(totalMin/completed.length):0;
+      const productivity=hours?completed.length/hours:0;
+      const metersHour=hours?totalMeters/hours:0;
+      const pending=list.filter(r=>['PENDIENTE_LIDER','PENDIENTE_GERENCIA','APROBADO_PENDIENTE_CORTE'].includes(r.ESTADO_CORTE)).length;
+      const noOk=list.filter(r=>['NO_CONFORME','SUSPENDIDO','RECHAZADO','REVISAR'].includes(r.ESTADO_CORTE)).length;
+      $('analyticsKpis').innerHTML = [
+        ['Registros', list.length],
+        ['Cortes finalizados', completed.length],
+        ['Horas hombre', fmtHours(totalMin)],
+        ['Promedio por corte', avgMin ? avgMin+' min' : '0 min'],
+        ['Cortes / hora', productivity ? productivity.toFixed(2) : '0'],
+        ['Metros / hora', metersHour ? metersHour.toFixed(1) : '0']
+      ].map(([t,n])=>`<div class="analytics-kpi"><div class="num">${n}</div><div class="txt">${t}</div></div>`).join('');
+      const byDay=groupSum(list,r=>recordDateForAnalytics(r));
+      const byStatus=groupSum(list,r=>statusPillText(r.ESTADO_CORTE));
+      const byType=groupSum(list,r=>r.TIPO_CABLE || r.REFERENCIA_CABLE || 'Sin referencia');
+      const byPerson=groupSum(completed,r=>r.RESPONSABLE_CORTE || 'Sin responsable');
+      const byMetersDay=groupSum(list,r=>recordDateForAnalytics(r),r=>parseFloat(String(r.METRAJE_FINAL||r.METROS_SOLICITADOS||0).replace(',','.'))||0);
+      const typeMins={}; const typeCounts={};
+      completed.forEach(r=>{const k=r.TIPO_CABLE||r.REFERENCIA_CABLE||'Sin referencia'; typeMins[k]=(typeMins[k]||0)+recordMinutes(r); typeCounts[k]=(typeCounts[k]||0)+1;});
+      const avgType=Object.fromEntries(Object.entries(typeMins).map(([k,v])=>[k, typeCounts[k]?Math.round(v/typeCounts[k]):0]));
+      renderAnalyticsBar('graphByDay', topEntries(byDay,10), list.length);
+      renderAnalyticsBar('graphByStatus', topEntries(byStatus,10), list.length);
+      renderAnalyticsBar('graphByType', topEntries(byType,10), list.length);
+      renderAnalyticsBar('graphByPerson', topEntries(byPerson,10), completed.length);
+      renderAnalyticsBar('graphAvgType', topEntries(avgType,10), 0, ' min');
+      renderAnalyticsBar('graphMetersDay', topEntries(byMetersDay,10), 0, ' m');
+      const best = topEntries(byPerson,1)[0];
+      const comment=[];
+      comment.push(`Se analizaron ${list.length} registros; ${completed.length} tienen inicio y final de corte.`);
+      comment.push(`Horas hombre acumuladas: ${fmtHours(totalMin)} h. Promedio operativo: ${avgMin || 0} min por corte.`);
+      if(productivity) comment.push(`Productividad estimada: ${productivity.toFixed(2)} cortes por hora y ${metersHour.toFixed(1)} metros por hora.`);
+      if(best) comment.push(`Mayor volumen finalizado: ${best[0]} con ${best[1]} corte(s).`);
+      if(pending) comment.push(`Hay ${pending} registro(s) pendientes o aprobados por finalizar; conviene revisar para evitar demoras.`);
+      if(noOk) comment.push(`Hay ${noOk} registro(s) con novedad, suspensión o rechazo; deben revisarse para control de calidad.`);
+      if(!list.length) comment.splice(0, comment.length, 'No hay registros en el rango seleccionado. Ajuste el filtro de fechas o búsqueda.');
+      $('analyticsComment').innerHTML = `<strong>Lectura automática del periodo:</strong><ul>${comment.map(c=>`<li>${escapeHtml(c)}</li>`).join('')}</ul>`;
+      const rows=list.slice(0,80).map(r=>`<tr><td>${escapeHtml(recordDateForAnalytics(r))}</td><td>${escapeHtml(r.CONSECUTIVO||'')}</td><td>${escapeHtml(r.REFERENCIA_CABLE||'')}</td><td>${escapeHtml(r.CARRETE_LOTE||'')}</td><td>${escapeHtml(r.REMANENTE_PROYECTADO||'')}</td><td>${escapeHtml(r.RESPONSABLE_CORTE||'')}</td><td>${escapeHtml(recordMinutes(r)||'')}</td><td>${statusPill(r.ESTADO_CORTE)}</td></tr>`).join('');
+      $('analyticsDetail').innerHTML = rows ? `<table class="mini-table"><thead><tr><th>Fecha</th><th>Código</th><th>Cable</th><th>Carrete</th><th>Sobrante</th><th>Responsable</th><th>Min</th><th>Estado</th></tr></thead><tbody>${rows}</tbody></table>` : '<div class="empty-soft">Sin registros para mostrar.</div>';
+    }
+    function statusPillText(status){
+      const map={CONFORME:'Conforme',AUTORIZADO:'Autorizado',SUSPENDIDO:'Suspendido',NO_CONFORME:'No conforme',REVISAR:'Revisar',PENDIENTE_LIDER:'Pendiente líder',PENDIENTE_GERENCIA:'Pendiente gerencia',APROBADO_PENDIENTE_CORTE:'Aprobado pendiente corte',RECHAZADO:'Rechazado'};
+      return map[status] || status || 'Sin estado';
+    }
+    function setPage(page){
+      if(page === 'analytics' && !isRole('LIDER_LOGISTICO','GERENCIA')) page='operation';
+      document.body.dataset.page=page;
+      document.querySelectorAll('[data-page-btn]').forEach(b=>b.classList.toggle('page-active', b.dataset.pageBtn===page));
+      if(page==='analytics') renderAnalytics();
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+
+    function renderAll(){renderDashboard(); renderTable(); renderOperatorApprovedList(); renderAnalytics();}
+
+    window.deleteRecord = async function(id){
+      if(!canDeleteRecords()) return toast('Solo Líder Logístico o Gerencia pueden eliminar cortes.', 'error');
+      if(!confirm('¿Eliminar este registro?')) return;
+      const deleted = records.find(r=>r.id===id);
+      records = records.filter(r=>r.id!==id); saveRecords(); renderAll();
+      if(firebaseReady && currentUser && deleted){
+        try{ await fb.deleteDoc(fb.doc(fb.db,'cortes_cable',id)); }
+        catch(e){ toast('Eliminado localmente. Revise conexión para confirmar en nube.', 'error'); return; }
+      }
+      toast('Registro eliminado', 'click');
+    }
+
+    window.continueRecord = function(id){ return editRecord(id); }
+    window.editRecord = function(id){
+      const r=records.find(x=>x.id===id); if(!r) return;
+      if(!isRole('OPERARIO') || !isOwnRecord(r)){ toast('Solo el operario solicitante puede continuar este corte.', 'error'); return; }
+      if(r.APROBACION_ESTADO === 'PENDIENTE'){ toast('Este corte sigue pendiente de aprobación.', 'error'); return; }
+      if(r.APROBACION_ESTADO === 'RECHAZADO'){ toast('Esta solicitud fue rechazada.', 'error'); return; }
+      $('registroId').value = r.id || '';
+      $('consecutivoActual').value = r.CONSECUTIVO || '';
+      $('aprobacionTipoActual').value = r.APROBACION_TIPO || '';
+      $('aprobacionEstadoActual').value = r.APROBACION_ESTADO || '';
+      $('aprobadoPorActual').value = r.APROBADO_POR || '';
+      $('fechaAprobacionActual').value = r.FECHA_APROBACION || '';
+      $('fechaSolicitud').value=r.FECHA_SOLICITUD||''; $('horaSolicitud').value=r.HORA_SOLICITUD||''; $('pedido').value=r.PEDIDO_REQUERIMIENTO||''; $('clienteProceso').value=r.CLIENTE_PROCESO||'Logística';
+      $('referencia').value=r.REFERENCIA_CABLE||''; $('calibre').value=r.CALIBRE||''; $('tipoCable').value=r.TIPO_CABLE||''; $('colorCable').value=r.COLOR||''; $('metrosSolicitados').value=r.METROS_SOLICITADOS||''; $('ubicacionProducto').value=r.UBICACION_PRODUCTO||'';
+      $('carreteLote').value=r.CARRETE_LOTE||''; $('disponibleAntes').value=r.METROS_DISPONIBLES_ANTES||''; $('autorizadoMenor50').value=r.AUTORIZADO_MENOR_50||'NO'; $('autorizadoPor').value=r.AUTORIZADO_POR||''; $('motivoAutorizacion').value=r.MOTIVO_AUTORIZACION||'';
+      $('fechaCorte').value=r.FECHA_CORTE||''; $('horaInicio').value=r.HORA_INICIO||''; $('horaFin').value=r.HORA_FIN||''; $('metrajeFinal').value=r.METRAJE_FINAL||''; $('remanenteReal').value=r.REMANENTE_REAL||''; $('evidenciaTexto').value=r.EVIDENCIA_DESCRIPCION||'Registro digital';
+      $('corteUniforme').checked=r.CORTE_UNIFORME==='SI' || !r.CORTE_UNIFORME; $('tramoRotulado').checked=r.TRAMO_ROTULADO==='SI' || !r.TRAMO_ROTULADO; $('evidenciaRegistro').checked=r.EVIDENCIA_REGISTRO==='SI' || !r.EVIDENCIA_REGISTRO;
+      franjaManual = true; setSegmentValue('franjaAtencion', r.FRANJA_ATENCION||'MISMO_DIA_TARDE', false); $('cumpleTiempo').value=r.CUMPLE_TIEMPO||'PENDIENTE'; $('responsableChequeo').value=r.RESPONSABLE_CHEQUEO||''; $('responsableCorte').value=r.RESPONSABLE_CORTE||operatorName(); $('novedad').value=r.NOVEDAD||'SIN_NOVEDAD'; $('observacion').value=r.OBSERVACION||'';
+      calcRemanent(); updateCutWorkflow(); updateStatusPanel(); renderAll(); window.scrollTo({top:0, behavior:'smooth'}); toast('Aprobación cargada. Registre inicio y final del corte.', 'ok');
+    }
+
+    function rowsForExport(){
+      return records.slice().reverse().map(r => Object.fromEntries(columns.map(([key])=>[key, r[key] ?? ''])));
+    }
+
+    function delimiterEscape(value, delimiter){
+      const str=String(value ?? '');
+      if(str.includes('"') || str.includes('\n') || str.includes('\r') || str.includes(delimiter)) return '"' + str.replace(/"/g,'""') + '"';
+      return str;
+    }
+
+    function makeDelimited(delimiter){
+      const rows = rowsForExport();
+      const header = columns.map(c=>c[0]).join(delimiter);
+      const body = rows.map(r=>columns.map(([key])=>delimiterEscape(r[key], delimiter)).join(delimiter)).join('\r\n');
+      return '\ufeff' + header + (body ? '\r\n' + body : '');
+    }
+
+    function xmlEscape(value){return String(value ?? '').replace(/[<>&"']/g, m => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&apos;'}[m]));}
+    function colName(n){let s=''; while(n>=0){s=String.fromCharCode((n%26)+65)+s; n=Math.floor(n/26)-1;} return s;}
+    function makeSheetXml(){
+      const rows = rowsForExport();
+      const header = columns.map(([key])=>key);
+      const allRows = [header, ...rows.map(r=>columns.map(([key])=>r[key] ?? ''))];
+      const xmlRows = allRows.map((row, rIdx)=>{
+        const r = rIdx + 1;
+        const cells = row.map((value, cIdx)=>`<c r="${colName(cIdx)}${r}" t="inlineStr"><is><t>${xmlEscape(value)}</t></is></c>`).join('');
+        return `<row r="${r}">${cells}</row>`;
+      }).join('');
+      const lastRef = `${colName(columns.length-1)}${allRows.length}`;
+      return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><dimension ref="A1:${lastRef}"/><sheetViews><sheetView workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="18"/><sheetData>${xmlRows}</sheetData></worksheet>`;
+    }
+    function crc32(bytes){
+      if(!crc32.table){
+        crc32.table = Array.from({length:256}, (_,n)=>{let c=n; for(let k=0;k<8;k++) c = (c&1) ? (0xEDB88320 ^ (c>>>1)) : (c>>>1); return c>>>0;});
+      }
+      let c=0xffffffff;
+      for(const b of bytes) c = crc32.table[(c ^ b) & 0xff] ^ (c >>> 8);
+      return (c ^ 0xffffffff) >>> 0;
+    }
+    function u16(view, offset, value){view.setUint16(offset, value, true)}
+    function u32(view, offset, value){view.setUint32(offset, value >>> 0, true)}
+    function zipDateTime(){
+      const d = new Date();
+      const time = (d.getHours()<<11) | (d.getMinutes()<<5) | Math.floor(d.getSeconds()/2);
+      const date = ((d.getFullYear()-1980)<<9) | ((d.getMonth()+1)<<5) | d.getDate();
+      return {time, date};
+    }
+    function makeZip(files){
+      const enc = new TextEncoder();
+      const localParts = [];
+      const centralParts = [];
+      let offset = 0;
+      const {time, date} = zipDateTime();
+      for(const file of files){
+        const nameBytes = enc.encode(file.path);
+        const data = typeof file.data === 'string' ? enc.encode(file.data) : file.data;
+        const crc = crc32(data);
+        const local = new Uint8Array(30 + nameBytes.length);
+        const lv = new DataView(local.buffer);
+        u32(lv,0,0x04034b50); u16(lv,4,20); u16(lv,6,0); u16(lv,8,0); u16(lv,10,time); u16(lv,12,date); u32(lv,14,crc); u32(lv,18,data.length); u32(lv,22,data.length); u16(lv,26,nameBytes.length); u16(lv,28,0);
+        local.set(nameBytes,30);
+        localParts.push(local, data);
+        const central = new Uint8Array(46 + nameBytes.length);
+        const cv = new DataView(central.buffer);
+        u32(cv,0,0x02014b50); u16(cv,4,20); u16(cv,6,20); u16(cv,8,0); u16(cv,10,0); u16(cv,12,time); u16(cv,14,date); u32(cv,16,crc); u32(cv,20,data.length); u32(cv,24,data.length); u16(cv,28,nameBytes.length); u16(cv,30,0); u16(cv,32,0); u16(cv,34,0); u16(cv,36,0); u32(cv,38,0); u32(cv,42,offset);
+        central.set(nameBytes,46);
+        centralParts.push(central);
+        offset += local.length + data.length;
+      }
+      const centralSize = centralParts.reduce((a,p)=>a+p.length,0);
+      const end = new Uint8Array(22);
+      const ev = new DataView(end.buffer);
+      u32(ev,0,0x06054b50); u16(ev,4,0); u16(ev,6,0); u16(ev,8,files.length); u16(ev,10,files.length); u32(ev,12,centralSize); u32(ev,16,offset); u16(ev,20,0);
+      return new Blob([...localParts, ...centralParts, end], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    }
+    function makeXlsxBlob(){
+      const files = [
+        {path:'[Content_Types].xml', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>'},
+        {path:'_rels/.rels', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'},
+        {path:'xl/workbook.xml', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="CONTROL_CORTE" sheetId="1" r:id="rId1"/></sheets></workbook>'},
+        {path:'xl/_rels/workbook.xml.rels', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>'},
+        {path:'xl/worksheets/sheet1.xml', data:makeSheetXml()}
+      ];
+      return makeZip(files);
+    }
+
+    function makeExcelHtml(){
+      const rows = rowsForExport();
+      const th = columns.map(([key])=>`<th>${escapeHtml(key)}</th>`).join('');
+      const tr = rows.map(r=>`<tr>${columns.map(([key])=>`<td style="mso-number-format:'\\@';">${escapeHtml(r[key])}</td>`).join('')}</tr>`).join('');
+      return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>table{border-collapse:collapse;font-family:Arial;font-size:10pt}th{background:#0b2a5b;color:white;font-weight:bold}td,th{border:1px solid #9aa6b2;padding:5px;mso-number-format:'\\@';}.title{font-size:16pt;font-weight:bold;color:#0b2a5b}</style></head><body><div class="title">CONTROL CORTE DE CABLE - ARCHIVO PLANO</div><p>Generado: ${escapeHtml(todayHuman())}</p><table><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></body></html>`;
+    }
+
+    function downloadBlob(content, filename, mime){
+      const blob = content instanceof Blob ? content : new Blob([content], {type:mime});
+      const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(url); a.remove();}, 600);
+      lastExportFile = {blob, filename, mime};
+      return filename;
+    }
+
+    async function exportRecords(format){
+      if(!isRole('LIDER_LOGISTICO')){toast('Solo Líder Logístico puede exportar archivos.', 'error'); return;}
+      if(!['xls','txt'].includes(format)){toast('Formato no disponible para este rol.', 'error'); return;}
+      if(!records.length){toast('No hay registros para exportar.', 'error'); return;}
+      const stamp=nowParts().stamp;
+      let filename='', content='', mime='';
+      if(format === 'xls') { filename = `control_corte_cable_${stamp}.xlsx`; content = makeXlsxBlob(); mime = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'; }
+      if(format === 'csv') { filename = `control_corte_cable_${stamp}.csv`; content = makeDelimited(';'); mime = 'text/csv;charset=utf-8'; }
+      if(format === 'txt') { filename = `control_corte_cable_${stamp}.txt`; content = makeDelimited('|'); mime = 'text/plain;charset=utf-8'; }
+      if(format === 'json') { filename = `respaldo_control_corte_cable_${stamp}.json`; content = JSON.stringify(records, null, 2); mime = 'application/json;charset=utf-8'; }
+      const downloadedName = downloadBlob(content, filename, mime);
+      const summary = buildShareSummary(downloadedName);
+      await copySummaryToClipboard(summary);
+      toast(`Archivo generado: ${downloadedName}`, 'export');
+
+      showSharePanel(`<strong>Archivo generado:</strong> ${escapeHtml(downloadedName)}<br>El archivo quedó descargado correctamente.`);
+    }
+
+    function buildShareSummary(filename=''){
+      const total=records.length; const counts=countByStatus();
+      const pendientes=(counts.PENDIENTE_LIDER||0)+(counts.PENDIENTE_GERENCIA||0);
+      const aprobadosPendientes=counts.APROBADO_PENDIENTE_CORTE||0;
+      const noConformes=(counts.NO_CONFORME||0)+(counts.SUSPENDIDO||0)+(counts.REVISAR||0)+(counts.RECHAZADO||0);
+      const latest=records[0];
+      const lastLine = latest ? `
+Último registro: ${latest.PEDIDO_REQUERIMIENTO || '-'} | ${latest.CLIENTE_PROCESO || '-'} | ${latest.REFERENCIA_CABLE || '-'} | Estado: ${latest.ESTADO_CORTE || '-'}` : '';
+      return `Buen día.
+
+Comparto el control de corte de cable generado desde la herramienta operativa.
+
+Archivo adjunto: ${filename || 'control_corte_cable.xlsx'}
+Registros consolidados: ${total}
+Conformes: ${counts.CONFORME||0}
+Autorizados: ${counts.AUTORIZADO||0}
+Pendientes de aprobación: ${pendientes}
+No conformes / suspendidos / por revisar: ${noConformes}
+Generado: ${todayHuman()}${lastLine}
+
+Quedo atento(a) a la validación correspondiente.`;
+    }
+
+    function showSharePanel(message, type='ok'){
+      const panel=$('sharePanel');
+      if(!panel) return;
+      panel.classList.add('show');
+      panel.innerHTML = message;
+      panel.style.borderColor = type === 'error' ? '#fecaca' : '#bbf7d0';
+      panel.style.background = type === 'error' ? '#fef2f2' : '#f0fdf4';
+      panel.style.color = type === 'error' ? '#7f1d1d' : '#14532d';
+    }
+
+    async function copySummaryToClipboard(summary){
+      try{ await navigator.clipboard.writeText(summary); return true; }catch(e){ return false; }
+    }
+
+    function getEmailTo(){
+      const input = $('emailTo');
+      const saved = localStorage.getItem(EMAIL_TO_KEY);
+      return (input && input.value ? input.value.trim() : saved || DEFAULT_EMAIL_TO) || DEFAULT_EMAIL_TO;
+    }
+
+    function buildMailtoUrl(summary, filename=''){
+      const to = getEmailTo();
+      const subject = `Control de corte de cable - ${todayHuman()}`;
+      const body = `${summary}\n\nArchivo generado: ${filename || 'control_corte_cable.xlsx'}\n\nSi el archivo no quedó adjunto automáticamente, adjúntelo desde Descargas antes de enviar.`;
+      return `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
+    function canNativeShareFile(file){
+      return !!(navigator.share && navigator.canShare && navigator.canShare({files:[file]}));
+    }
+
+    async function openEmailFallback(filename=''){
+      const msg = buildShareSummary(filename);
+      await copySummaryToClipboard(msg);
+      const url = buildMailtoUrl(msg, filename);
+      const opened = window.open(url, '_blank');
+      if(!opened) window.location.href = url;
+      return true;
+    }
+
+    async function sendLastFileByEmail(fromExport=false){
+      if(!lastExportFile){ toast('Primero exporte un archivo.', 'error'); return false; }
+      const summary = buildShareSummary(lastExportFile.filename);
+      await copySummaryToClipboard(`Correo destino: ${getEmailTo()}\n\n${summary}`);
+      const file = new File([lastExportFile.blob], lastExportFile.filename, {type:lastExportFile.mime});
+
+      if(canNativeShareFile(file)){
+        try{
+          await navigator.share({
+            title:'Control de corte de cable',
+            text:`Correo destino sugerido: ${getEmailTo()}\n\n${summary}`,
+            files:[file]
+          });
+          showSharePanel(`<strong>Archivo listo para enviar.</strong><br>Seleccione Correo/Gmail/Outlook en el menú del dispositivo, use el correo <strong>${escapeHtml(getEmailTo())}</strong> y envíe el Excel adjunto.<div style="margin-top:10px"><button type="button" class="btn-green" onclick="openEmailFallback(lastExportFile.filename)">Abrir correo con resumen</button></div>`);
+          toast('Archivo compartido al menú del dispositivo.', 'ok');
+          return true;
+        }catch(e){
+          if(!fromExport) toast('Compartir cancelado o no disponible.', 'error');
+        }
+      }
+
+      showSharePanel(`<strong>Archivo descargado.</strong><br>No fue posible anexarlo automáticamente desde este equipo. Se abrirá el correo a <strong>${escapeHtml(getEmailTo())}</strong> con el resumen listo. Adjunte el Excel desde Descargas antes de enviar.<div style="margin-top:10px"><button type="button" class="btn-green" onclick="openEmailFallback(lastExportFile.filename)">Abrir correo</button></div>`,'error');
+      toast('Se abre el correo con resumen. Adjunte el Excel descargado.', 'error');
+      if(fromExport) await openEmailFallback(lastExportFile.filename);
+      return false;
+    }
+
+    function saveEmailConfig(){
+      const to = getEmailTo();
+      localStorage.setItem(EMAIL_TO_KEY, to);
+      toast('Correo guardado', 'ok');
+      showSharePanel(`<strong>Correo guardado.</strong><br>Los reportes se prepararán para: <strong>${escapeHtml(to)}</strong>.`);
+    }
+
+    function enhanceAdaptiveInputs(){
+      const targets = document.querySelectorAll('textarea');
+      targets.forEach(el=>{
+        el.classList.add('auto-grow');
+        const update = ()=>{
+          el.style.height = 'auto';
+          el.style.height = Math.min(Math.max(el.scrollHeight, 130), 260) + 'px';
+        };
+        el.addEventListener('input', update);
+        el.addEventListener('focus', update);
+        update();
+      });
+    }
+
+    function setView(view){
+      document.body.dataset.view=view;
+      document.querySelectorAll('[data-view-btn]').forEach(b=>b.classList.toggle('active-view', b.dataset.viewBtn===view));
+      localStorage.setItem('control_corte_view', view);
+      beep('click');
+    }
+
+
+    let deferredInstallPrompt = null;
+
+    function registerServiceWorker(){
+      if('serviceWorker' in navigator){
+        window.addEventListener('load', ()=>{
+          navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+        });
+      }
+    }
+
+    function setupInstallPrompt(){
+      const btn = $('btnInstall');
+      if(!btn) return;
+      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent || '');
+      const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+      const showIosHelp = ()=>{
+        btn.hidden = false;
+        btn.textContent = 'Instalar app';
+        btn.onclick = ()=>{
+          showSharePanel('<strong>Instalar en iPhone o iPad:</strong><br>Abra esta página en Safari y toque <strong>Compartir</strong> → <strong>Agregar a pantalla de inicio</strong>.');
+          toast('Use Safari para instalar la app', 'ok');
+        };
+      };
+
+      window.addEventListener('beforeinstallprompt', (event)=>{
+        event.preventDefault();
+        deferredInstallPrompt = event;
+        btn.hidden = false;
+        btn.textContent = 'Instalar app';
+      });
+
+      btn.addEventListener('click', async ()=>{
+        if(deferredInstallPrompt){
+          deferredInstallPrompt.prompt();
+          try{
+            const choice = await deferredInstallPrompt.userChoice;
+            if(choice && choice.outcome === 'accepted'){
+              toast('App instalada', 'ok');
+              btn.hidden = true;
+            }
+          }catch(_e){}
+          deferredInstallPrompt = null;
+          return;
+        }
+        if(isIOS && !standalone){
+          showIosHelp();
+          btn.click();
+          return;
+        }
+        toast('Abra el menú del navegador y seleccione instalar aplicación.', 'click');
+      });
+
+      window.addEventListener('appinstalled', ()=>{
+        btn.hidden = true;
+        toast('App instalada en el dispositivo', 'ok');
+      });
+
+      if(isIOS && !standalone) showIosHelp();
+    }
+
+
+    function isFirebaseConfigured(){
+      return FIREBASE_CONFIG.apiKey && !String(FIREBASE_CONFIG.apiKey).includes('PEGAR_') && FIREBASE_CONFIG.projectId && !String(FIREBASE_CONFIG.projectId).includes('PEGAR_');
+    }
+    function userRole(){return currentProfile?.rol || 'OPERARIO'}
+    function isRole(...roles){return roles.includes(userRole())}
+    function emailKey(email){return String(email||'').trim().toLowerCase()}
+    function operatorName(){return currentProfile?.nombre || currentUser?.displayName || currentUser?.email || ''}
+    function syncOperatorFields(){
+      if($('responsableCorte')){
+        $('responsableCorte').value = currentUser ? operatorName() : '';
+        $('responsableCorte').readOnly = true;
+      }
+      if($('responsableCorteInfo')){
+        $('responsableCorteInfo').textContent = currentUser ? `Usuario activo: ${operatorName()} · ${userRole().replace('_',' ')}` : 'Inicie sesión para completar este campo automáticamente.';
+      }
+    }
+    function canDeleteRecords(){return !!currentUser && isRole('LIDER_LOGISTICO','GERENCIA')}
+    function canCreateRecords(){return !!currentUser && !!currentProfile && isRole('OPERARIO')}
+    function approvalRequiredForRecord(record){
+      const rem = Number(String(record.REMANENTE_PROYECTADO || '').replace(',','.'));
+      if(Number.isFinite(rem) && rem < 50) return {tipo:'AUTORIZACION_GERENCIA_MENOR_50', estado:'PENDIENTE', status:'PENDIENTE_GERENCIA'};
+      if(Number.isFinite(rem) && rem === 50) return {tipo:'VALIDACION_LIDER_50', estado:'PENDIENTE', status:'PENDIENTE_LIDER'};
+      return {tipo:'NO_REQUIERE', estado:'NO_REQUIERE', status:record.ESTADO_CORTE};
+    }
+    function canApprove(record){
+      if(!currentUser || !currentProfile) return false;
+      if(record.APROBACION_ESTADO !== 'PENDIENTE') return false;
+      if(record.APROBACION_TIPO === 'VALIDACION_LIDER_50') return isRole('LIDER_LOGISTICO');
+      if(record.APROBACION_TIPO === 'AUTORIZACION_GERENCIA_MENOR_50') return isRole('GERENCIA');
+      return false;
+    }
+    function applyApprovalWorkflow(record){
+      const req = approvalRequiredForRecord(record);
+      const wasApproved = record.APROBACION_ESTADO === 'APROBADO';
+      record.APROBACION_TIPO = record.APROBACION_TIPO || req.tipo;
+      record.APROBACION_ESTADO = wasApproved ? 'APROBADO' : req.estado;
+      record.APROBADO_POR = record.APROBADO_POR || '';
+      record.FECHA_APROBACION = record.FECHA_APROBACION || '';
+      if(wasApproved){
+        record.CUMPLE_REMANENTE = record.APROBACION_TIPO === 'AUTORIZACION_GERENCIA_MENOR_50' ? 'AUTORIZADO' : 'SI';
+        record.ESTADO_CORTE = record.APROBACION_TIPO === 'AUTORIZACION_GERENCIA_MENOR_50' ? 'AUTORIZADO' : 'CONFORME';
+        record.CUMPLE_TIEMPO = record.HORA_INICIO && record.HORA_FIN ? 'SI' : 'PENDIENTE';
+      } else if(req.estado === 'PENDIENTE'){
+        record.ESTADO_CORTE = req.status;
+        record.CUMPLE_REMANENTE = req.tipo === 'VALIDACION_LIDER_50' ? 'VALIDACIÓN LÍDER LOGÍSTICO' : 'REQUIERE GERENCIA';
+        record.FECHA_CORTE = '';
+        record.HORA_INICIO = '';
+        record.HORA_FIN = '';
+        record.METRAJE_FINAL = '';
+        record.REMANENTE_REAL = record.REMANENTE_PROYECTADO;
+        record.CORTE_UNIFORME = '';
+        record.TRAMO_ROTULADO = '';
+        record.EVIDENCIA_REGISTRO = '';
+        record.CUMPLE_TIEMPO = 'PENDIENTE';
+        record.OBSERVACION = cleanText([record.OBSERVACION, req.tipo === 'VALIDACION_LIDER_50' ? 'Pendiente validación de Líder Logístico por remanente igual a 50 m. No continuar el corte hasta aprobación.' : 'Pendiente autorización de Gerencia por remanente menor a 50 m. No continuar el corte hasta aprobación.'].filter(Boolean).join(' '));
+      }
+      record.SOLICITANTE_UID = currentUser?.uid || record.SOLICITANTE_UID || '';
+      record.SOLICITANTE_CORREO = currentUser?.email || record.SOLICITANTE_CORREO || '';
+      record.SOLICITANTE_NOMBRE = operatorName() || record.SOLICITANTE_NOMBRE || '';
+      record.SOLICITANTE_ROL = userRole() || record.SOLICITANTE_ROL || '';
+      return record;
+    }
+    function updateCloudStatus(text, cls='warn'){
+      const el = $('cloudStatus');
+      if(!el) return;
+      el.textContent = text;
+      el.className = 'connection-pill ' + cls;
+    }
+    function setAuthView(){
+      const logged = !!currentUser && !!currentProfile && currentProfile.activo !== false;
+      document.body.dataset.session = logged ? 'in' : 'out';
+      document.body.dataset.appRole = logged ? userRole() : 'SIN_SESION';
+      if($('authLoggedOut')) $('authLoggedOut').hidden = !!currentUser;
+      if($('authLoggedIn')) $('authLoggedIn').hidden = !currentUser;
+      if($('roleBadge')) $('roleBadge').textContent = currentProfile ? currentProfile.rol.replace('_',' ') : (currentUser ? 'Pendiente' : 'Sin sesión');
+      if($('currentUserText')) $('currentUserText').textContent = currentUser ? `${operatorName()} · ${currentUser.email}` : '';
+      const showApproval = logged && isRole('LIDER_LOGISTICO','GERENCIA');
+      const showUsers = logged && isRole('GERENCIA');
+      if($('approvalPanel')) $('approvalPanel').hidden = !showApproval;
+      if($('usersPanel')) $('usersPanel').hidden = !showUsers;
+      if($('btnDeleteAll')) $('btnDeleteAll').hidden = !canDeleteRecords();
+      if($('exportPanel')) $('exportPanel').hidden = !isRole('LIDER_LOGISTICO');
+      if(document.body.dataset.page === 'analytics' && !isRole('LIDER_LOGISTICO','GERENCIA')) setPage('operation');
+      if($('cutForm')) $('cutForm').querySelectorAll('input,select,textarea,button').forEach(el=>{ if(el.id !== 'btnSound') el.disabled = !canCreateRecords(); });
+      syncOperatorFields();
+      renderApprovalPanel();
+      renderUsersPanel();
+    }
+    async function initFirebase(){
+      if(firebaseReady) return true;
+      if(firebaseInitPromise) return firebaseInitPromise;
+      firebaseInitPromise = (async()=>{
+        if(!isFirebaseConfigured()){
+          firebaseReady = false;
+          updateCloudStatus('Configurar Firebase','warn');
+          setAuthView();
+          showSharePanel('<strong>Firebase no está configurado.</strong><br>Revise que el objeto FIREBASE_CONFIG tenga apiKey, authDomain, projectId, storageBucket, messagingSenderId y appId.');
+          firebaseInitPromise = null;
+          return false;
+        }
+        updateCloudStatus('Conectando nube','warn');
+        try{
+          const appMod = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js');
+          const authMod = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js');
+          const fsMod = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js');
+          let app;
+          try{ app = appMod.getApp ? appMod.getApp() : null; }
+          catch(_e){ app = null; }
+          if(!app) app = appMod.initializeApp(FIREBASE_CONFIG);
+          fb = {...authMod, ...fsMod, app, appMod, authMod, initializeSecondaryApp: appMod.initializeApp, deleteApp: appMod.deleteApp, auth:authMod.getAuth(app), db:fsMod.getFirestore(app)};
+          firebaseReady = true;
+          updateCloudStatus('Nube disponible','ok');
+          if(!firebaseObserverReady){
+            firebaseObserverReady = true;
+            fb.onAuthStateChanged(fb.auth, async user=>{
+              currentUser = user;
+              if(user){ await ensureUserProfile(user); subscribeCloudRecords(); if(isRole('GERENCIA')) subscribeUsers(); }
+              else { currentProfile=null; if(cloudRecordsUnsub) cloudRecordsUnsub(); if(cloudUsersUnsub) cloudUsersUnsub(); if(cloudPreUsersUnsub) cloudPreUsersUnsub(); updateCloudStatus('Nube disponible','ok'); }
+              setAuthView();
+            });
+          }
+          setAuthView();
+          return true;
+        }catch(err){
+          firebaseReady = false;
+          firebaseInitPromise = null;
+          updateCloudStatus('Sin conexión nube','warn');
+          const msg = err && err.message ? err.message : 'No fue posible iniciar Firebase.';
+          showSharePanel('<strong>No se conectó a Firebase.</strong><br>Verifique internet, que el dominio de GitHub Pages esté autorizado en Firebase Authentication y que se haya publicado la última versión.<br><small>'+escapeHtml(msg)+'</small>');
+          setAuthView();
+          return false;
+        }
+      })();
+      return firebaseInitPromise;
+    }
+    async function ensureFirebaseReady(){
+      if(firebaseReady) return true;
+      const ok = await initFirebase();
+      return !!ok && firebaseReady;
+    }
+    async function getPreapprovedUser(email){
+      try{
+        const snap = await fb.getDoc(fb.doc(fb.db, 'usuarios_preaprobados', emailKey(email)));
+        return snap.exists() ? snap.data() : null;
+      }catch(_e){ return null; }
+    }
+    async function ensureUserProfile(user){
+      const ref = fb.doc(fb.db, 'usuarios', user.uid);
+      const snap = await fb.getDoc(ref);
+      if(snap.exists()){
+        currentProfile = snap.data();
+      }else{
+        const isAdmin = ADMIN_EMAILS.map(x=>x.toLowerCase()).includes(String(user.email||'').toLowerCase());
+        const pre = await getPreapprovedUser(user.email);
+        if(!isAdmin && !pre){
+          currentProfile = null;
+          updateCloudStatus('Usuario no habilitado','warn');
+          toast('Este correo aún no está habilitado por Gerencia.', 'error');
+          try{ await fb.signOut(fb.auth); }catch(_e){}
+          return;
+        }
+        const role = isAdmin ? 'GERENCIA' : pre.rol;
+        const name = pre?.nombre || user.displayName || $('authName')?.value || user.email;
+        currentProfile = {uid:user.uid, correo:user.email, nombre:name, rol:role, activo:true, creadoEn:new Date().toISOString(), preaprobado:!!pre};
+        await fb.setDoc(ref, currentProfile, {merge:true});
+        if(pre){
+          await fb.setDoc(fb.doc(fb.db, 'usuarios_preaprobados', emailKey(user.email)), {uid:user.uid, activado:true, activadoEn:new Date().toISOString()}, {merge:true});
+        }
+      }
+      updateCloudStatus('Nube conectada','ok');
+      syncOperatorFields();
+    }
+    async function loginFirebase(){
+      if(!await ensureFirebaseReady()){toast('No hay conexión con Firebase. Revise la publicación o el dominio autorizado.', 'error'); return;}
+      try{ await fb.signInWithEmailAndPassword(fb.auth, val('authEmail'), val('authPassword')); toast('Ingreso correcto','ok'); }
+      catch(err){ toast('No fue posible ingresar. Revise correo y clave.', 'error'); }
+    }
+    async function registerFirebaseUser(){
+      if(!await ensureFirebaseReady()){toast('No hay conexión con Firebase. Revise la publicación o el dominio autorizado.', 'error'); return;}
+      if(!val('authEmail') || !val('authPassword')){toast('Complete correo y clave.', 'error'); return;}
+      try{
+        const cred = await fb.createUserWithEmailAndPassword(fb.auth, val('authEmail'), val('authPassword'));
+        if(val('authName') && fb.updateProfile) await fb.updateProfile(cred.user, {displayName: val('authName')});
+        toast('Usuario creado','ok');
+      }
+      catch(err){ toast('No fue posible crear el usuario.', 'error'); }
+    }
+    async function logoutFirebase(){ if(firebaseReady) await fb.signOut(fb.auth); toast('Sesión cerrada','click'); }
+
+    function updateNotificationUi(){
+      const status = $('notifyStatus');
+      const btn = $('btnEnableNotifications');
+      if(!status || !btn) return;
+      const supported = 'Notification' in window;
+      if(!supported){ status.textContent='Avisos no disponibles'; btn.hidden=true; return; }
+      const permission = Notification.permission;
+      if(approvalNotificationsEnabled && permission === 'granted'){
+        status.textContent='Avisos activos';
+        btn.textContent='Avisos activos';
+      }else if(permission === 'denied'){
+        status.textContent='Avisos bloqueados';
+        btn.textContent='Revisar avisos';
+      }else{
+        status.textContent='Avisos pendientes';
+        btn.textContent='Activar avisos';
+      }
+    }
+
+    async function enableApprovalNotifications(){
+      if(!('Notification' in window)){
+        toast('Este dispositivo no permite avisos del navegador.', 'error');
+        return;
+      }
+      let permission = Notification.permission;
+      if(permission === 'default') permission = await Notification.requestPermission();
+      if(permission === 'granted'){
+        approvalNotificationsEnabled = true;
+        localStorage.setItem(NOTIFY_KEY, '1');
+        updateNotificationUi();
+        notifyDevice('Avisos activados', 'Recibirá aviso cuando llegue una aprobación pendiente.', 'avisos-activos');
+        toast('Avisos activados', 'ok');
+      }else{
+        approvalNotificationsEnabled = false;
+        localStorage.setItem(NOTIFY_KEY, '0');
+        updateNotificationUi();
+        toast('Los avisos no fueron autorizados en el navegador.', 'error');
+      }
+    }
+
+    function notifyDevice(title, body, tag='aprobacion'){
+      try{
+        if(!approvalNotificationsEnabled || !('Notification' in window) || Notification.permission !== 'granted') return;
+        const options = {body, tag, icon:'icon-192.png', badge:'icon-192.png', data:{url:location.href}};
+        if(navigator.serviceWorker && navigator.serviceWorker.getRegistration){
+          navigator.serviceWorker.getRegistration().then(reg=>{
+            if(reg && reg.showNotification) reg.showNotification(title, options);
+            else new Notification(title, options);
+          }).catch(()=>new Notification(title, options));
+        }else{
+          new Notification(title, options);
+        }
+      }catch(_e){}
+    }
+
+    function approvalNoticeTarget(record){
+      if(!currentUser || !currentProfile || !record) return false;
+      if(record.APROBACION_ESTADO === 'PENDIENTE' && canApprove(record)) return true;
+      if(isRole('OPERARIO') && isOwnRecord(record) && (record.APROBACION_ESTADO === 'APROBADO' || record.APROBACION_ESTADO === 'RECHAZADO')) return true;
+      return false;
+    }
+
+    function approvalNoticeKey(record){
+      return [record.id || record.CONSECUTIVO || '', record.APROBACION_ESTADO || '', record.APROBACION_TIPO || '', record.FECHA_APROBACION || ''].join('|');
+    }
+
+    function approvalNoticeMessage(record){
+      if(record.APROBACION_ESTADO === 'APROBADO'){
+        return {title:'Corte aprobado', body:`El corte ${record.CONSECUTIVO || ''} fue aprobado. Ya puede continuar y registrar las horas.`};
+      }
+      if(record.APROBACION_ESTADO === 'RECHAZADO'){
+        return {title:'Solicitud rechazada', body:`La solicitud ${record.CONSECUTIVO || ''} fue rechazada. Revise la novedad antes de continuar.`};
+      }
+      const who = record.APROBACION_TIPO === 'AUTORIZACION_GERENCIA_MENOR_50' ? 'Gerencia' : 'Líder Logístico';
+      return {title:`Nueva aprobación pendiente`, body:`${who}: ${record.CONSECUTIVO || ''} · Carrete ${record.CARRETE_LOTE || ''} · Remanente ${record.REMANENTE_PROYECTADO || ''} m`};
+    }
+
+    function checkApprovalNotifications(){
+      const targets = records.filter(approvalNoticeTarget);
+      const currentKeys = new Set(targets.map(approvalNoticeKey));
+      if(!approvalNotificationInitialized){
+        knownApprovalNoticeKeys = currentKeys;
+        approvalNotificationInitialized = true;
+        return;
+      }
+      const incoming = targets.filter(r=>!knownApprovalNoticeKeys.has(approvalNoticeKey(r)));
+      knownApprovalNoticeKeys = currentKeys;
+      if(!incoming.length) return;
+      const panel = $('approvalPanel');
+      if(panel){ panel.classList.remove('notice-pulse'); void panel.offsetWidth; panel.classList.add('notice-pulse'); }
+      incoming.slice(0,3).forEach((r, idx)=>{
+        const msg = approvalNoticeMessage(r);
+        setTimeout(()=>{
+          beep('error');
+          toast(msg.title + ': ' + msg.body, 'ok');
+          notifyDevice(msg.title, msg.body, 'aprobacion-' + approvalNoticeKey(r));
+        }, idx * 450);
+      });
+    }
+
+    function subscribeCloudRecords(){
+      if(!firebaseReady || !currentUser) return;
+      if(cloudRecordsUnsub) cloudRecordsUnsub();
+      const q = fb.query(fb.collection(fb.db,'cortes_cable'), fb.orderBy('FECHA_REGISTRO_SISTEMA','desc'), fb.limit(1000));
+      cloudRecordsUnsub = fb.onSnapshot(q, snap=>{
+        records = snap.docs.map(d=>({id:d.id, ...d.data()}));
+        saveRecords();
+        renderAll();
+        renderApprovalPanel();
+        checkApprovalNotifications();
+      }, ()=>updateCloudStatus('Nube sin lectura','warn'));
+    }
+    function subscribeUsers(){
+      if(!firebaseReady || !isRole('GERENCIA')) return;
+      if(cloudUsersUnsub) cloudUsersUnsub();
+      if(cloudPreUsersUnsub) cloudPreUsersUnsub();
+      cloudUsersUnsub = fb.onSnapshot(fb.collection(fb.db,'usuarios'), snap=>{
+        window.__cloudUsers = snap.docs.map(d=>({id:d.id, ...d.data()}));
+        renderUsersPanel();
+      });
+      cloudPreUsersUnsub = fb.onSnapshot(fb.collection(fb.db,'usuarios_preaprobados'), snap=>{
+        window.__preUsers = snap.docs.map(d=>({id:d.id, ...d.data()}));
+        renderUsersPanel();
+      });
+    }
+    async function saveRecordToCloud(record){
+      if(!firebaseReady || !currentUser) return;
+      await fb.setDoc(fb.doc(fb.db,'cortes_cable',record.id), {...record, updatedAt:new Date().toISOString()}, {merge:true});
+    }
+    function pendingApprovals(){return records.filter(r=>r.APROBACION_ESTADO === 'PENDIENTE')}
+    function renderApprovalPanel(){
+      if(!$('approvalList')) return;
+      const list = pendingApprovals();
+      if(!list.length){$('approvalList').innerHTML='<div class="empty-soft">No hay solicitudes pendientes.</div>'; return;}
+      $('approvalList').innerHTML = list.map(r=>{
+        const allowed = canApprove(r);
+        const label = r.APROBACION_TIPO === 'VALIDACION_LIDER_50' ? 'Validación Líder Logístico' : 'Autorización Gerencia';
+        return `<div class="approval-item"><strong>${escapeHtml(label)}</strong><div class="approval-meta">${escapeHtml(r.CONSECUTIVO||'')} · Pedido ${escapeHtml(r.PEDIDO_REQUERIMIENTO||'')} · ${escapeHtml(r.CLIENTE_PROCESO||'')}<br>Carrete ${escapeHtml(r.CARRETE_LOTE||'')} · Remanente ${escapeHtml(r.REMANENTE_PROYECTADO||'')} m<br>Motivo: ${escapeHtml(r.MOTIVO_AUTORIZACION || r.OBSERVACION || 'Sin detalle')}</div><div class="approval-actions">${allowed?`<button type="button" class="btn-green" onclick="approveRecord('${r.id}')">Aprobar</button><button type="button" class="btn-red" onclick="rejectRecord('${r.id}')">Rechazar</button>`:'<span class="user-chip">Sin permiso para aprobar</span>'}</div></div>`;
+      }).join('');
+    }
+    window.approveRecord = async function(id){
+      const r = records.find(x=>x.id===id); if(!r || !canApprove(r)) return toast('No tiene permiso para aprobar esta solicitud.', 'error');
+      r.APROBACION_ESTADO='APROBADO'; r.APROBADO_POR=`${currentProfile?.nombre || currentUser.email} (${userRole()})`; r.FECHA_APROBACION=todayHuman(); r.ESTADO_CORTE = 'APROBADO_PENDIENTE_CORTE'; r.CUMPLE_TIEMPO='PENDIENTE';
+      if(r.APROBACION_TIPO === 'AUTORIZACION_GERENCIA_MENOR_50'){ r.AUTORIZADO_MENOR_50='SI'; r.AUTORIZADO_POR='Gerencia'; }
+      saveRecords(); renderAll(); renderApprovalPanel();
+      try{ await saveRecordToCloud(r); toast('Solicitud aprobada','ok'); }catch(e){toast('Aprobada localmente. Revise conexión.', 'error');}
+    }
+    window.rejectRecord = async function(id){
+      const r = records.find(x=>x.id===id); if(!r || !canApprove(r)) return toast('No tiene permiso para rechazar esta solicitud.', 'error');
+      r.APROBACION_ESTADO='RECHAZADO'; r.APROBADO_POR=`${currentProfile?.nombre || currentUser.email} (${userRole()})`; r.FECHA_APROBACION=todayHuman(); r.ESTADO_CORTE='SUSPENDIDO'; r.NOVEDAD='SUSPENDIDO';
+      saveRecords(); renderAll(); renderApprovalPanel();
+      try{ await saveRecordToCloud(r); toast('Solicitud rechazada','click'); }catch(e){toast('Rechazada localmente. Revise conexión.', 'error');}
+    }
+    function renderUsersPanel(){
+      if(!$('usersList')) return;
+      const users = window.__cloudUsers || [];
+      const preUsers = window.__preUsers || [];
+      if(!isRole('GERENCIA')){$('usersList').innerHTML='<div class="empty-soft">Solo Gerencia puede administrar usuarios.</div>'; return;}
+      const registered = users.length ? users.map(u=>`<div class="user-item"><strong>${escapeHtml(u.nombre || u.correo)}</strong><div class="user-meta">${escapeHtml(u.correo || '')} · ${escapeHtml(u.uid || u.id || '')}</div><div class="user-actions"><select class="role-select" id="role_${escapeHtml(u.uid||u.id)}"><option value="OPERARIO" ${u.rol==='OPERARIO'?'selected':''}>Operario</option><option value="LIDER_LOGISTICO" ${u.rol==='LIDER_LOGISTICO'?'selected':''}>Líder Logístico</option><option value="GERENCIA" ${u.rol==='GERENCIA'?'selected':''}>Gerencia</option></select><button type="button" onclick="updateUserRole('${escapeHtml(u.uid||u.id)}')">Guardar rol</button></div></div>`).join('') : '<div class="empty-soft">No hay usuarios registrados.</div>';
+      const pending = preUsers.length ? preUsers.map(u=>`<div class="user-item"><strong>${escapeHtml(u.nombre || u.correo)}</strong><div class="user-meta">${escapeHtml(u.correo || '')} · Rol habilitado: ${escapeHtml((u.rol||'OPERARIO').replace('_',' '))}${u.activado?' · Activado':' · Pendiente de crear clave'}</div></div>`).join('') : '<div class="empty-soft">No hay usuarios habilitados pendientes.</div>';
+      $('usersList').innerHTML = `<div class="users-subtitle">Usuarios registrados</div>${registered}<div class="users-subtitle">Usuarios pendientes / prehabilitados</div>${pending}`;
+    }
+    async function preapproveUser(){
+      if(!isRole('GERENCIA')) return toast('Solo Gerencia puede crear usuarios.', 'error');
+      if(!firebaseReady){ return toast('La conexión en nube no está disponible.', 'error'); }
+      const correo = emailKey(val('newUserEmail'));
+      const nombre = cleanText(val('newUserName')) || correo;
+      const rol = val('newUserRole') || 'OPERARIO';
+      const clave = val('newUserPassword') || 'Cable2026*';
+      if(!correo || !correo.includes('@')){ toast('Ingrese un correo válido.', 'error'); return; }
+      if(String(clave).length < 6){ toast('La clave debe tener mínimo 6 caracteres.', 'error'); return; }
+      let secondaryApp = null;
+      try{
+        secondaryApp = fb.initializeSecondaryApp(FIREBASE_CONFIG, 'crearUsuario_' + Date.now());
+        const secondaryAuth = fb.authMod.getAuth(secondaryApp);
+        const cred = await fb.authMod.createUserWithEmailAndPassword(secondaryAuth, correo, clave);
+        try{ await fb.authMod.updateProfile(cred.user, {displayName:nombre}); }catch(_e){}
+        await fb.setDoc(fb.doc(fb.db,'usuarios', cred.user.uid), {
+          uid: cred.user.uid,
+          correo,
+          nombre,
+          rol,
+          activo:true,
+          creadoPor: operatorName(),
+          creadoPorCorreo: currentUser?.email || '',
+          creadoEn:new Date().toISOString(),
+          actualizadoEn:new Date().toISOString()
+        }, {merge:true});
+        try{ await fb.authMod.signOut(secondaryAuth); }catch(_e){}
+        try{ await fb.deleteApp(secondaryApp); }catch(_e){}
+        $('newUserEmail').value=''; $('newUserName').value=''; $('newUserRole').value='OPERARIO'; $('newUserPassword').value='Cable2026*';
+        toast('Usuario creado y habilitado.', 'ok');
+        showSharePanel(`<strong>Usuario creado.</strong><br><strong>Correo:</strong> ${escapeHtml(correo)}<br><strong>Clave inicial:</strong> ${escapeHtml(clave)}<br><strong>Rol:</strong> ${escapeHtml(rol.replace('_',' '))}`);
+      }catch(e){
+        try{ if(secondaryApp) await fb.deleteApp(secondaryApp); }catch(_e){}
+        const code = e?.code || '';
+        let msg = 'No fue posible crear el usuario.';
+        if(code.includes('email-already-in-use')) msg = 'Ese correo ya existe en Authentication. Si no aparece en usuarios registrados, debe iniciar sesión una vez o crear el perfil con el UID.';
+        else if(code.includes('permission-denied')) msg = 'Sin permiso para crear el perfil. Revise que las reglas nuevas estén publicadas en Firestore.';
+        else if(code.includes('weak-password')) msg = 'La clave inicial es muy débil o tiene menos de 6 caracteres.';
+        toast(msg, 'error');
+        showSharePanel(`<strong>${escapeHtml(msg)}</strong><br>Código: ${escapeHtml(code || 'sin código')}`,'error');
+      }
+    }
+    window.updateUserRole = async function(uid){
+      if(!isRole('GERENCIA')) return toast('Solo Gerencia puede cambiar roles.', 'error');
+      const role = document.getElementById('role_'+uid)?.value || 'OPERARIO';
+      try{ await fb.setDoc(fb.doc(fb.db,'usuarios',uid), {rol:role, actualizadoEn:new Date().toISOString()}, {merge:true}); toast('Rol actualizado','ok'); }
+      catch(e){toast('No fue posible actualizar el rol.', 'error');}
+    }
+
+    document.addEventListener('click', (e)=>{ if(e.target.matches('button')) beep('click'); });
+    document.querySelectorAll('[data-view-btn]').forEach(btn=>btn.addEventListener('click', ()=>setView(btn.dataset.viewBtn)));
+    document.querySelectorAll('[data-export]').forEach(btn=>btn.addEventListener('click', ()=>exportRecords(btn.dataset.export)));
+    document.querySelectorAll('[data-page-btn]').forEach(btn=>btn.addEventListener('click', ()=>setPage(btn.dataset.pageBtn)));
+    ['graphDateFrom','graphDateTo','graphSearch'].forEach(id=>{ if($(id)) $(id).addEventListener('input', renderAnalytics); });
+    if($('btnApplyGraphs')) $('btnApplyGraphs').addEventListener('click', renderAnalytics);
+    if($('btnClearGraphs')) $('btnClearGraphs').addEventListener('click', ()=>{['graphDateFrom','graphDateTo','graphSearch'].forEach(id=>{ if($(id)) $(id).value=''; }); renderAnalytics(); toast('Filtros limpiados','click');});
+    $('cutForm').addEventListener('submit', saveRecord);
+    $('btnSaveRecord').addEventListener('click', ()=>{submitIntent='record';});
+    $('btnSendApproval').addEventListener('click', ()=>{submitIntent='approval'; $('cutForm').requestSubmit();});
+    $('btnStartCut').addEventListener('click', startCutTime);
+    $('btnEndCut').addEventListener('click', endCutTime);
+    ['horaInicio','horaFin'].forEach(id=>$(id).addEventListener('input', updateDuration));
+    $('btnClearForm').addEventListener('click', ()=>clearForm(true));
+    $('btnToday').addEventListener('click', ()=>{const n=nowParts(); $('fechaSolicitud').value=n.date; $('horaSolicitud').value=n.time; $('fechaCorte').value=n.date; franjaManual=false; autoFranja(true); updateStatusPanel(); toast('Fecha y hora actualizadas', 'ok');});
+    $('btnRefresh').addEventListener('click', ()=>{renderAll(); toast('Vista actualizada', 'ok');});
+    $('btnSound').addEventListener('click', ()=>{soundEnabled=!soundEnabled; $('btnSound').textContent = 'Sonido: ' + (soundEnabled?'ON':'OFF'); toast(soundEnabled?'Sonido activado':'Sonido desactivado','click')});
+    if($('btnEmail')) $('btnEmail').addEventListener('click', sendLastFileByEmail);
+    if($('btnSaveEmailConfig')) $('btnSaveEmailConfig').addEventListener('click', saveEmailConfig);
+    if($('btnOpenMail')) $('btnOpenMail').addEventListener('click', ()=>openEmailFallback(lastExportFile?.filename || 'control_corte_cable.xlsx'));
+    if($('btnLogin')) $('btnLogin').addEventListener('click', loginFirebase);
+    if($('btnRegisterUser')) $('btnRegisterUser').addEventListener('click', registerFirebaseUser);
+    if($('btnLogout')) $('btnLogout').addEventListener('click', logoutFirebase);
+    if($('btnPreapproveUser')) $('btnPreapproveUser').addEventListener('click', preapproveUser);
+    if($('btnEnableNotifications')) $('btnEnableNotifications').addEventListener('click', enableApprovalNotifications);
+    $('btnPrint').addEventListener('click', ()=>window.print());
+    $('btnDeleteAll').addEventListener('click', async ()=>{
+      if(!canDeleteRecords()) return toast('Solo Líder Logístico o Gerencia pueden borrar registros.', 'error');
+      if(!confirm('¿Borrar todos los registros guardados?')) return;
+      const ids = records.map(r=>r.id).filter(Boolean);
+      records=[]; saveRecords(); renderAll();
+      if(firebaseReady && currentUser && ids.length){
+        try{ await Promise.all(ids.map(id=>fb.deleteDoc(fb.doc(fb.db,'cortes_cable',id)))); }
+        catch(e){ toast('Registros borrados localmente. Revise conexión para confirmar en nube.', 'error'); return; }
+      }
+      toast('Registros borrados', 'error');
+    });
+    $('searchInput').addEventListener('input', renderTable);
+    $('filterStatus').addEventListener('change', renderTable);
+    document.querySelectorAll('[data-segment="franjaAtencion"] .seg-option').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        setSegmentValue('franjaAtencion', btn.dataset.value, true);
+        toast('Franja seleccionada: ' + franjaLabel(btn.dataset.value), 'click');
+      });
+    });
+    $('btnAutoFranja').addEventListener('click', ()=>{franjaManual=false; autoFranja(true); toast('Franja calculada automáticamente', 'ok');});
+    ['metrosSolicitados','disponibleAntes','horaSolicitud','autorizadoMenor50','autorizadoPor','motivoAutorizacion','corteUniforme','tramoRotulado','evidenciaRegistro','cumpleTiempo','novedad','pedido','referencia','carreteLote','metrajeFinal','remanenteReal','responsableChequeo'].forEach(id=>$(id).addEventListener('input', calcRemanent));
+    ['autorizadoMenor50','autorizadoPor','cumpleTiempo','novedad'].forEach(id=>$(id).addEventListener('change', calcRemanent));
+
+    setupInstallPrompt();
+    registerServiceWorker();
+    setCurrentDateTime();
+    if($('emailTo')) $('emailTo').value = localStorage.getItem(EMAIL_TO_KEY) || DEFAULT_EMAIL_TO;
+    setSegmentValue('franjaAtencion', val('franjaAtencion') || 'MISMO_DIA_TARDE', false);
+    enhanceAdaptiveInputs();
+    setView(localStorage.getItem('control_corte_view') || 'auto');
+    updateNotificationUi();
+    setAuthView();
+    initFirebase();
+    calcRemanent();
+    setPage('operation');
+    renderAll();
+  </script>
+</body>
+</html>
